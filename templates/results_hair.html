@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Your Hair Plan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/dashboard" class="nav-login">Dashboard</a>
+    </nav>
+
+    <section class="results-section">
+        <div class="results-container">
+
+            <div class="form-header">
+                <p class="hero-tag">✨ Your Personal Plan</p>
+                <h2>Your Hair & Beard Plan</h2>
+                <p class="hero-sub">Based on your profile — personalized just for you.</p>
+            </div>
+
+            <div class="results-card">
+                <pre class="results-text">{{ result }}</pre>
+            </div>
+
+            <div style="text-align:center; margin-top:40px;">
+                <a href="/plan/hair" class="btn">Retake Quiz</a>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Body & Fitness</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/dashboard" class="nav-login">Back</a>
+    </nav>
+    <section class="form-section">
+        <div class="form-container">
+            <div class="form-header">
+                <p class="hero-tag">💪 Body & Fitness</p>
+                <h2>Tell Us About Yourself</h2>
+                <p class="hero-sub">We'll build your perfect workout plan.</p>
+            </div>
+            <form action="/plan/fitness" method="POST">
+                <div class="form-group">
+                    <label>What is your current body type?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="body_type" value="slim" required><span>Slim</span></label>
+                        <label class="option"><input type="radio" name="body_type" value="athletic"><span>Athletic</span></label>
+                        <label class="option"><input type="radio" name="body_type" value="average"><span>Average</span></label>
+                        <label class="option"><input type="radio" name="body_type" value="heavyset"><span>Heavyset</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your main fitness goal?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="goal" value="build_muscle" required><span>Build Muscle</span></label>
+                        <label class="option"><input type="radio" name="goal" value="lose_weight"><span>Lose Weight</span></label>
+                        <label class="option"><input type="radio" name="goal" value="stay_lean"><span>Stay Lean</span></label>
+                        <label class="option"><input type="radio" name="goal" value="bulk_up"><span>Bulk Up</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your current activity level?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="activity" value="beginner" required><span>Beginner</span></label>
+                        <label class="option"><input type="radio" name="activity" value="intermediate"><span>Intermediate</span></label>
+                        <label class="option"><input type="radio" name="activity" value="advanced"><span>Advanced</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>How many days per week can you train?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="days" value="2-3 days" required><span>2-3 days</span></label>
+                        <label class="option"><input type="radio" name="days" value="4-5 days"><span>4-5 days</span></label>
+                        <label class="option"><input type="radio" name="days" value="6-7 days"><span>6-7 days</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What equipment do you have?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="equipment" value="no_equipment" required><span>No Equipment</span></label>
+                        <label class="option"><input type="radio" name="equipment" value="home_gym"><span>Home Gym</span></label>
+                        <label class="option"><input type="radio" name="equipment" value="full_gym"><span>Full Gym</span></label>
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="submit-btn" style="width:100%; border:none; cursor:pointer; margin-top:16px;" onclick="showLoading()">
+                    Generate My Fitness Plan ✨
+                </button>
+                <div id="loading" style="display:none; text-align:center; margin-top:24px;">
+                    <p style="color:#c9a84c; font-size:16px; letter-spacing:2px;">ANALYZING YOUR PROFILE...</p>
+                    <p style="color:#666666; font-size:14px; margin-top:8px;">This takes a few seconds ✨</p>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script>
+    function showLoading() {
+        setTimeout(function() {
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+        }, 100);
+    }
+    </script>
+</body>
+</html>

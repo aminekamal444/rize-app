@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Sign Up</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/login" class="nav-login">Login</a>
+    </nav>
+
+    <section class="auth-section">
+        <div class="auth-card">
+            <h2>Create Your Account</h2>
+            <p class="auth-sub">Start your 30 day transformation</p>
+
+            <!-- Google Sign Up — will be activated when Supabase is connected -->
+            <button class="btn-google" disabled>
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20"/>
+                Continue with Google
+            </button>
+
+            <div class="divider"><span>or</span></div>
+
+            <form class="auth-form" action="/signup" method="POST">
+                <input type="email" name="email" placeholder="Email address" required />
+                <input type="password" name="password" placeholder="Password" required />
+                <input type="password" name="confirm_password" placeholder="Confirm password" required />
+                <button type="submit" class="btn">Create Account</button>
+            </form>
+
+            <p class="auth-link">Already have an account? <a href="/login">Login</a></p>
+        </div>
+    </section>
+
+</body>
+</html>

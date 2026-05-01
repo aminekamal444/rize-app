@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Hair & Beard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/dashboard" class="nav-login">Back</a>
+    </nav>
+    <section class="form-section">
+        <div class="form-container">
+            <div class="form-header">
+                <p class="hero-tag">✂️ Hair & Beard</p>
+                <h2>Tell Us About Yourself</h2>
+                <p class="hero-sub">Answer these questions and AI will generate your perfect hair and beard plan.</p>
+            </div>
+            <form action="/plan/hair" method="POST">
+                <div class="form-group">
+                    <label>What is your face shape?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="face_shape" value="oval" required><span>Oval</span></label>
+                        <label class="option"><input type="radio" name="face_shape" value="round"><span>Round</span></label>
+                        <label class="option"><input type="radio" name="face_shape" value="square"><span>Square</span></label>
+                        <label class="option"><input type="radio" name="face_shape" value="heart"><span>Heart</span></label>
+                        <label class="option"><input type="radio" name="face_shape" value="diamond"><span>Diamond</span></label>
+                        <label class="option"><input type="radio" name="face_shape" value="rectangle"><span>Rectangle</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your hair texture?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="hair_texture" value="straight" required><span>Straight</span></label>
+                        <label class="option"><input type="radio" name="hair_texture" value="wavy"><span>Wavy</span></label>
+                        <label class="option"><input type="radio" name="hair_texture" value="curly"><span>Curly</span></label>
+                        <label class="option"><input type="radio" name="hair_texture" value="coily"><span>Coily</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>How thick is your hair?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="hair_thickness" value="thin" required><span>Thin</span></label>
+                        <label class="option"><input type="radio" name="hair_thickness" value="medium"><span>Medium</span></label>
+                        <label class="option"><input type="radio" name="hair_thickness" value="thick"><span>Thick</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>How much time do you spend on your hair daily?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="maintenance" value="0-5min" required><span>0-5 min</span></label>
+                        <label class="option"><input type="radio" name="maintenance" value="5-15min"><span>5-15 min</span></label>
+                        <label class="option"><input type="radio" name="maintenance" value="15-30min"><span>15-30 min</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your lifestyle?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="lifestyle" value="professional" required><span>Professional</span></label>
+                        <label class="option"><input type="radio" name="lifestyle" value="casual"><span>Casual</span></label>
+                        <label class="option"><input type="radio" name="lifestyle" value="active"><span>Active / Sport</span></label>
+                        <label class="option"><input type="radio" name="lifestyle" value="creative"><span>Creative</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Your beard growth density?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="beard_density" value="patchy" required><span>Patchy</span></label>
+                        <label class="option"><input type="radio" name="beard_density" value="medium"><span>Medium</span></label>
+                        <label class="option"><input type="radio" name="beard_density" value="full"><span>Full</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What beard style do you prefer?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="beard_style" value="clean_shaven" required><span>Clean Shaven</span></label>
+                        <label class="option"><input type="radio" name="beard_style" value="stubble"><span>Light Stubble</span></label>
+                        <label class="option"><input type="radio" name="beard_style" value="short_beard"><span>Short Beard</span></label>
+                        <label class="option"><input type="radio" name="beard_style" value="full_beard"><span>Full Beard</span></label>
+                        <label class="option"><input type="radio" name="beard_style" value="goatee"><span>Goatee</span></label>
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="submit-btn" style="width:100%; border:none; cursor:pointer; margin-top:16px;" onclick="showLoading()">
+                    Generate My Plan ✨
+                </button>
+                <div id="loading" style="display:none; text-align:center; margin-top:24px;">
+                    <p style="color:#c9a84c; font-size:16px; letter-spacing:2px;">ANALYZING YOUR PROFILE...</p>
+                    <p style="color:#666666; font-size:14px; margin-top:8px;">This takes a few seconds ✨</p>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script>
+    function showLoading() {
+        setTimeout(function() {
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+        }, 100);
+    }
+    </script>
+</body>
+</html>

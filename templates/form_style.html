@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Style & Outfits</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/dashboard" class="nav-login">Back</a>
+    </nav>
+    <section class="form-section">
+        <div class="form-container">
+            <div class="form-header">
+                <p class="hero-tag">👔 Style & Outfits</p>
+                <h2>Tell Us About Yourself</h2>
+                <p class="hero-sub">We'll build your perfect style profile.</p>
+            </div>
+            <form action="/plan/style" method="POST">
+                <div class="form-group">
+                    <label>What is your body type?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="body_type" value="slim" required><span>Slim</span></label>
+                        <label class="option"><input type="radio" name="body_type" value="athletic"><span>Athletic</span></label>
+                        <label class="option"><input type="radio" name="body_type" value="average"><span>Average</span></label>
+                        <label class="option"><input type="radio" name="body_type" value="heavyset"><span>Heavyset</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your height?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="height" value="short" required><span>Short</span></label>
+                        <label class="option"><input type="radio" name="height" value="medium"><span>Medium</span></label>
+                        <label class="option"><input type="radio" name="height" value="tall"><span>Tall</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your skin tone?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="skin_tone" value="light" required><span>Light</span></label>
+                        <label class="option"><input type="radio" name="skin_tone" value="medium"><span>Medium</span></label>
+                        <label class="option"><input type="radio" name="skin_tone" value="olive"><span>Olive</span></label>
+                        <label class="option"><input type="radio" name="skin_tone" value="dark"><span>Dark</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your style preference?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="style_pref" value="streetwear" required><span>Streetwear</span></label>
+                        <label class="option"><input type="radio" name="style_pref" value="casual"><span>Casual</span></label>
+                        <label class="option"><input type="radio" name="style_pref" value="smart_casual"><span>Smart Casual</span></label>
+                        <label class="option"><input type="radio" name="style_pref" value="formal"><span>Formal</span></label>
+                        <label class="option"><input type="radio" name="style_pref" value="minimalist"><span>Minimalist</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your main occasion?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="occasion" value="daily" required><span>Daily Life</span></label>
+                        <label class="option"><input type="radio" name="occasion" value="work"><span>Work</span></label>
+                        <label class="option"><input type="radio" name="occasion" value="going_out"><span>Going Out</span></label>
+                        <label class="option"><input type="radio" name="occasion" value="gym"><span>Gym</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your budget?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="budget" value="low" required><span>Low</span></label>
+                        <label class="option"><input type="radio" name="budget" value="medium"><span>Medium</span></label>
+                        <label class="option"><input type="radio" name="budget" value="high"><span>High</span></label>
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="submit-btn" style="width:100%; border:none; cursor:pointer; margin-top:16px;" onclick="showLoading()">
+                    Generate My Style Plan ✨
+                </button>
+                <div id="loading" style="display:none; text-align:center; margin-top:24px;">
+                    <p style="color:#c9a84c; font-size:16px; letter-spacing:2px;">ANALYZING YOUR PROFILE...</p>
+                    <p style="color:#666666; font-size:14px; margin-top:8px;">This takes a few seconds ✨</p>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script>
+    function showLoading() {
+        setTimeout(function() {
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+        }, 100);
+    }
+    </script>
+</body>
+</html>

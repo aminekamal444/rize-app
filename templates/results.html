@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Your Plan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/dashboard" class="nav-login">Dashboard</a>
+    </nav>
+
+    <section class="results-section">
+        <div class="results-container">
+
+            <div class="form-header">
+                <p class="hero-tag">{{ emoji }} Your Personal Plan</p>
+                <h2>{{ title }}</h2>
+                <p class="hero-sub">Based on your profile — personalized just for you.</p>
+            </div>
+
+            <div class="results-card">
+                {% for line in result.split('\n') %}
+                    {% if line.strip() %}
+                        {% if line.strip().startswith('💇') or
+                              line.strip().startswith('✂️') or
+                              line.strip().startswith('🧔') or
+                              line.strip().startswith('🪒') or
+                              line.strip().startswith('👔') or
+                              line.strip().startswith('🎨') or
+                              line.strip().startswith('👗') or
+                              line.strip().startswith('🛍️') or
+                              line.strip().startswith('⚠️') or
+                              line.strip().startswith('💪') or
+                              line.strip().startswith('🥗') or
+                              line.strip().startswith('😴') or
+                              line.strip().startswith('📈') or
+                              line.strip().startswith('⚡') or
+                              line.strip().startswith('🌅') or
+                              line.strip().startswith('🌙') or
+                              line.strip().startswith('🧪') or
+                              line.strip().startswith('❌') or
+                              line.strip().startswith('📅') %}
+                            <h3 class="result-heading">{{ line.strip() }}</h3>
+                        {% else %}
+                            <p class="result-para">{{ line.strip() }}</p>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="disclaimer">
+                ⚠️ This plan is for general guidance only and is not medical advice.
+                For serious skin conditions, hair loss, or health concerns,
+                always consult a qualified doctor or dermatologist.
+            </div>
+
+            <div style="text-align:center; margin-top:40px; padding-bottom:80px;">
+                <a href="/dashboard" class="btn">Back to Dashboard</a>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

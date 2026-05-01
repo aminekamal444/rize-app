@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/login" class="nav-login">Login</a>
+    </nav>
+
+    <section class="hero">
+        <p class="hero-tag">AI Powered Glow Up</p>
+        <h2>Become The Best<br>Version Of Yourself</h2>
+        <p class="hero-sub">Get your personal glow up score and a 30 day plan to transform your hair, beard, body, style and skin.</p>
+        <a href="/signup" class="btn">Start My Glow Up</a>
+    </section>
+
+    <section class="features">
+        <div class="feature-card">
+            <span class="feature-icon">✂️</span>
+            <h3>Hair & Beard</h3>
+            <p>Best cuts and styles for your face shape</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">👔</span>
+            <h3>Style & Outfits</h3>
+            <p>Colors and fits that suit your body</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">💪</span>
+            <h3>Body & Fitness</h3>
+            <p>Personalized workout plan for your goals</p>
+        </div>
+        <div class="feature-card">
+            <span class="feature-icon">🧴</span>
+            <h3>Skin & Grooming</h3>
+            <p>Daily routine tailored to your skin type</p>
+        </div>
+    </section>
+
+    <section class="scores">
+        <div class="scores-text">
+            <p class="hero-tag">Your Glow Up Score</p>
+            <h2>Track Your Progress<br>Over 30 Days</h2>
+            <p class="hero-sub">Every day you complete your tasks, your score goes up. Watch yourself transform in real time.</p>
+            <a href="/signup" class="btn">Get My Score</a>
+        </div>
+        <div class="scores-cards">
+            <div class="score-item">
+                <span>Hair</span>
+                <div class="score-bar"><div class="score-fill" style="width: 78%"></div></div>
+                <span class="score-num">78</span>
+            </div>
+            <div class="score-item">
+                <span>Beard</span>
+                <div class="score-bar"><div class="score-fill" style="width: 65%"></div></div>
+                <span class="score-num">65</span>
+            </div>
+            <div class="score-item">
+                <span>Style</span>
+                <div class="score-bar"><div class="score-fill" style="width: 55%"></div></div>
+                <span class="score-num">55</span>
+            </div>
+            <div class="score-item">
+                <span>Body</span>
+                <div class="score-bar"><div class="score-fill" style="width: 82%"></div></div>
+                <span class="score-num">82</span>
+            </div>
+            <div class="score-item">
+                <span>Skin</span>
+                <div class="score-bar"><div class="score-fill" style="width: 70%"></div></div>
+                <span class="score-num">70</span>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <h2 class="logo">RIZE</h2>
+        <p>Your 30 day transformation starts today.</p>
+        <a href="/signup" class="btn">Start For Free</a>
+        <p class="footer-small">Powered by AI — Built for Men</p>
+    </footer>
+
+</body>
+</html>

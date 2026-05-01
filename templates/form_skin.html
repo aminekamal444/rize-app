@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Skin & Grooming</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/dashboard" class="nav-login">Back</a>
+    </nav>
+    <section class="form-section">
+        <div class="form-container">
+            <div class="form-header">
+                <p class="hero-tag">🧴 Skin & Grooming</p>
+                <h2>Tell Us About Your Skin</h2>
+                <p class="hero-sub">We'll build your perfect skincare routine.</p>
+            </div>
+            <form action="/plan/skin" method="POST">
+                <div class="form-group">
+                    <label>What is your skin type?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="skin_type" value="oily" required><span>Oily</span></label>
+                        <label class="option"><input type="radio" name="skin_type" value="dry"><span>Dry</span></label>
+                        <label class="option"><input type="radio" name="skin_type" value="combination"><span>Combination</span></label>
+                        <label class="option"><input type="radio" name="skin_type" value="normal"><span>Normal</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your main skin concern?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="concern" value="acne" required><span>Acne</span></label>
+                        <label class="option"><input type="radio" name="concern" value="dark_spots"><span>Dark Spots</span></label>
+                        <label class="option"><input type="radio" name="concern" value="dryness"><span>Dryness</span></label>
+                        <label class="option"><input type="radio" name="concern" value="aging"><span>Aging</span></label>
+                        <label class="option"><input type="radio" name="concern" value="uneven_tone"><span>Uneven Tone</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Do you currently have a skincare routine?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="routine" value="none" required><span>No Routine</span></label>
+                        <label class="option"><input type="radio" name="routine" value="basic"><span>Basic</span></label>
+                        <label class="option"><input type="radio" name="routine" value="advanced"><span>Advanced</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>What is your age range?</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="age" value="under 20" required><span>Under 20</span></label>
+                        <label class="option"><input type="radio" name="age" value="20-25"><span>20-25</span></label>
+                        <label class="option"><input type="radio" name="age" value="25-30"><span>25-30</span></label>
+                        <label class="option"><input type="radio" name="age" value="30+"><span>30+</span></label>
+                    </div>
+                </div>
+                <button type="submit" class="btn" id="submit-btn" style="width:100%; border:none; cursor:pointer; margin-top:16px;" onclick="showLoading()">
+                    Generate My Skin Plan ✨
+                </button>
+                <div id="loading" style="display:none; text-align:center; margin-top:24px;">
+                    <p style="color:#c9a84c; font-size:16px; letter-spacing:2px;">ANALYZING YOUR PROFILE...</p>
+                    <p style="color:#666666; font-size:14px; margin-top:8px;">This takes a few seconds ✨</p>
+                </div>
+            </form>
+        </div>
+    </section>
+    <script>
+    function showLoading() {
+        setTimeout(function() {
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+        }, 100);
+    }
+    </script>
+</body>
+</html>
