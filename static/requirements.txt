@@ -1,5 +1,6 @@
-flask
-python-dotenv
+flask==2.3.3
+python-dotenv==1.0.0
 supabase==1.0.3
-anthropic
-requests
+anthropic==0.18.1
+requests==2.31.0
+Werkzeug==2.3.7

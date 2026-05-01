@@ -288,3 +288,5 @@ def plan_skin_post():
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+app = app
