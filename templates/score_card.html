@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Your Glow Up Score</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/dashboard" class="nav-login">Dashboard</a>
+    </nav>
+
+    <section class="score-result-section">
+        <div class="score-result-container">
+
+            <div class="form-header">
+                <p class="hero-tag">Your Result</p>
+                <h2>Your Glow Up Score</h2>
+                <p class="hero-sub">Tap download to save your card and share it.</p>
+            </div>
+
+            <div id="share-card" class="share-card">
+                <div class="share-card-header">
+                    <span class="share-card-logo">RIZE</span>
+                    <span class="share-card-tag">Glow Up Score</span>
+                </div>
+
+                <div class="share-card-overall">
+                    <div class="overall-label">Overall</div>
+                    <div class="overall-score">{{ scores.overall }}</div>
+                    <div class="overall-tagline">{{ scores.tagline }}</div>
+                </div>
+
+                <div class="share-card-grid">
+                    <div class="share-stat">
+                        <div class="share-stat-num">01</div>
+                        <div class="share-stat-label">Hair</div>
+                        <div class="share-stat-value">{{ scores.hair }}</div>
+                    </div>
+                    <div class="share-stat">
+                        <div class="share-stat-num">02</div>
+                        <div class="share-stat-label">Style</div>
+                        <div class="share-stat-value">{{ scores.style }}</div>
+                    </div>
+                    <div class="share-stat">
+                        <div class="share-stat-num">03</div>
+                        <div class="share-stat-label">Fitness</div>
+                        <div class="share-stat-value">{{ scores.fitness }}</div>
+                    </div>
+                    <div class="share-stat">
+                        <div class="share-stat-num">04</div>
+                        <div class="share-stat-label">Skin</div>
+                        <div class="share-stat-value">{{ scores.skin }}</div>
+                    </div>
+                </div>
+
+                <div class="share-card-footer">
+                    <div class="share-footer-label">Strength</div>
+                    <div class="share-footer-text">{{ scores.strength }}</div>
+                    <div class="share-footer-label">Next Move</div>
+                    <div class="share-footer-text">{{ scores.improvement }}</div>
+                </div>
+
+                <div class="share-card-watermark">rize &middot; ai powered glow up</div>
+            </div>
+
+            <div class="score-actions">
+                <button onclick="downloadCard()" class="btn" id="download-btn">Download Share Card</button>
+                <a href="/score" class="btn-outline">Try Another Photo</a>
+                <a href="/dashboard" style="color:var(--text-muted); font-size:12px; letter-spacing:2px; text-decoration:none; text-transform:uppercase; margin-top:8px;">Back to Dashboard</a>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+    function downloadCard() {
+        const card = document.getElementById('share-card');
+        const btn = document.getElementById('download-btn');
+        const original = btn.textContent;
+        btn.textContent = 'Generating...';
+        btn.disabled = true;
+
+        html2canvas(card, {
+            backgroundColor: '#0e0c0a',
+            scale: 3,
+            useCORS: true,
+            logging: false
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'rize-glow-up-score.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            btn.textContent = original;
+            btn.disabled = false;
+        }).catch(() => {
+            btn.textContent = 'Try again';
+            btn.disabled = false;
+        });
+    }
+    </script>
+</body>
+</html>

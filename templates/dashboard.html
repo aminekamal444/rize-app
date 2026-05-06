@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
     <nav>
         <h1 class="logo">RIZE</h1>
         <a href="/" class="nav-login">Logout</a>
@@ -17,36 +16,46 @@
         <div class="dashboard-header">
             <p class="hero-tag">Welcome Back</p>
             <h2>What Do You Want<br>To Improve Today?</h2>
-            <p class="hero-sub">Choose a category and get your personalized plan.</p>
+            <p class="hero-sub">Choose a category and get your personalized AI plan.</p>
         </div>
+
+        <a href="/score" class="score-banner">
+            <div class="score-banner-left">
+                <div class="card-number">00</div>
+                <h3>Get Your Glow Up Score</h3>
+                <p>One photo. AI scores you out of 100 across all four pillars. Share the card.</p>
+            </div>
+            <div class="score-banner-right">
+                <span class="score-banner-cta">Score Me</span>
+            </div>
+        </a>
 
         <div class="dashboard-grid">
             <div class="dashboard-card">
-                <span class="feature-icon">✂️</span>
+                <div class="card-number">01</div>
                 <h3>Hair & Beard</h3>
-                <p>Best cuts for your face shape</p>
-                <a href="/plan/hair" class="btn">Get Plan</a>
+                <p>Best cuts and styles for your face shape and hair type</p>
+                <a href="/choose/hair" class="btn">Get Plan</a>
             </div>
             <div class="dashboard-card">
-                <span class="feature-icon">👔</span>
+                <div class="card-number">02</div>
                 <h3>Style & Outfits</h3>
-                <p>Colors and fits for your body</p>
-                <a href="/plan/style" class="btn">Get Plan</a>
+                <p>Colors and fits that suit your body type and skin tone</p>
+                <a href="/choose/style" class="btn">Get Plan</a>
             </div>
             <div class="dashboard-card">
-                <span class="feature-icon">💪</span>
+                <div class="card-number">03</div>
                 <h3>Body & Fitness</h3>
-                <p>Workout plan for your goals</p>
-                <a href="/plan/fitness" class="btn">Get Plan</a>
+                <p>Personalized workout plan tailored to your goals</p>
+                <a href="/choose/fitness" class="btn">Get Plan</a>
             </div>
             <div class="dashboard-card">
-                <span class="feature-icon">🧴</span>
+                <div class="card-number">04</div>
                 <h3>Skin & Grooming</h3>
-                <p>Daily routine for your skin type</p>
-                <a href="/plan/skin" class="btn">Get Plan</a>
+                <p>Daily routine built for your skin type and concerns</p>
+                <a href="/choose/skin" class="btn">Get Plan</a>
             </div>
         </div>
     </section>
-
 </body>
 </html>

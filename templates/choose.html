@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Choose Method</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/dashboard" class="nav-login">Back</a>
+    </nav>
+
+    <section class="auth-section">
+        <div class="choose-container">
+
+            <div class="form-header">
+                <p class="hero-tag">{{ emoji }} {{ title }}</p>
+                <h2>How Would You Like<br>To Proceed?</h2>
+                <p class="hero-sub">Choose the method that works best for you.</p>
+            </div>
+
+            <div class="choose-grid">
+                <a href="/scan/{{ category }}" class="choose-card">
+                    <span class="feature-icon">📸</span>
+                    <h3>Scan My Face</h3>
+                    <p>Upload a photo and AI detects your face shape, skin tone and features automatically. Most accurate.</p>
+                    <span class="choose-tag">Recommended</span>
+                </a>
+
+                <a href="/form/{{ category }}" class="choose-card">
+                    <span class="feature-icon">✍️</span>
+                    <h3>Answer Questions</h3>
+                    <p>Answer a few quick questions about yourself manually. No photo needed.</p>
+                    <span class="choose-tag-grey">Manual</span>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+</body>
+</html>

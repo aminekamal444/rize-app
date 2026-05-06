@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RIZE — Get Your Score</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav>
+        <h1 class="logo">RIZE</h1>
+        <a href="/dashboard" class="nav-login">Back</a>
+    </nav>
+
+    <section class="form-section">
+        <div class="form-container">
+            <div class="form-header">
+                <p class="hero-tag">00 / Glow Up Score</p>
+                <h2>Get Your Score</h2>
+                <p class="hero-sub">Upload one clear photo. Our AI scores you out of 100 across hair, style, fitness and skin — then gives you a card you can share.</p>
+            </div>
+
+            <form action="/score" method="POST" enctype="multipart/form-data">
+                <div class="upload-area" onclick="document.getElementById('photo').click()">
+                    <input type="file" id="photo" name="photo" accept="image/*" required style="display:none" onchange="previewImage(this)">
+                    <div id="upload-placeholder">
+                        <p style="color:var(--gold); font-size:13px; letter-spacing:4px; text-transform:uppercase; font-weight:700;">Click To Upload</p>
+                        <p style="color:var(--text-muted); font-size:13px; margin-top:14px; line-height:1.7;">Front facing &middot; good lighting<br>full upper body if possible</p>
+                    </div>
+                    <img id="preview" style="display:none; width:100%; border-radius:12px; max-height:420px; object-fit:cover;">
+                </div>
+
+                <div class="form-group" style="margin-top:36px;">
+                    <label>Age Range</label>
+                    <div class="options-grid">
+                        <label class="option"><input type="radio" name="age" value="under 20" required><span>Under 20</span></label>
+                        <label class="option"><input type="radio" name="age" value="20-25"><span>20-25</span></label>
+                        <label class="option"><input type="radio" name="age" value="25-30"><span>25-30</span></label>
+                        <label class="option"><input type="radio" name="age" value="30+"><span>30+</span></label>
+                    </div>
+                </div>
+
+                {% if error %}
+                <p style="color:#ff5555; font-size:13px; margin-top:16px; text-align:center; letter-spacing:0.5px;">{{ error }}</p>
+                {% endif %}
+
+                <button type="submit" class="btn" id="submit-btn" style="width:100%; border:none; cursor:pointer; margin-top:16px;" onclick="showLoading()">
+                    Score Me
+                </button>
+                <div id="loading" style="display:none; text-align:center; margin-top:28px;">
+                    <p style="color:var(--gold); font-size:12px; letter-spacing:4px; font-weight:700;">CALIBRATING YOUR SCORE</p>
+                    <p style="color:var(--text-muted); font-size:13px; margin-top:10px;">Takes about ten seconds</p>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview').src = e.target.result;
+                document.getElementById('preview').style.display = 'block';
+                document.getElementById('upload-placeholder').style.display = 'none';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    function showLoading() {
+        setTimeout(function() {
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+        }, 100);
+    }
+    </script>
+</body>
+</html>

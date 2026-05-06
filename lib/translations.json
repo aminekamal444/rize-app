@@ -1,0 +1,47 @@
+{
+  "common.welcome": {
+    "fr": "Bienvenue",
+    "en": "Welcome",
+    "ar": "مرحبا"
+  },
+  "common.continue": {
+    "fr": "Continuer",
+    "en": "Continue",
+    "ar": "متابعة"
+  },
+  "common.back": {
+    "fr": "Retour",
+    "en": "Back",
+    "ar": "رجوع"
+  },
+  "common.next": {
+    "fr": "Suivant",
+    "en": "Next",
+    "ar": "التالي"
+  },
+  "common.cancel": {
+    "fr": "Annuler",
+    "en": "Cancel",
+    "ar": "إلغاء"
+  },
+  "nav.logout": {
+    "fr": "Déconnexion",
+    "en": "Log out",
+    "ar": "تسجيل الخروج"
+  },
+  "nav.dashboard": {
+    "fr": "Tableau de bord",
+    "en": "Dashboard",
+    "ar": "لوحة التحكم"
+  },
+  "auth.login": {
+    "fr": "Se connecter",
+    "en": "Log in",
+    "ar": "تسجيل الدخول"
+  },
+  "auth.signup": {
+    "fr": "S'inscrire",
+    "en": "Sign up",
+    "ar": "إنشاء حساب"
+  }
+}

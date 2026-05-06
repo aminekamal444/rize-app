@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="{{ get_language() }}" {% if is_rtl() %}dir="rtl"{% endif %}>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RIZE{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+    <nav>
+        <h1 class="logo">RIZE</h1>
+
+        <div class="nav-right">
+            {# Language switcher #}
+            <div class="lang-switcher">
+                <a href="{{ url_for('set_language', lang_code='fr') }}"
+                   class="lang-btn {% if get_language() == 'fr' %}lang-btn--active{% endif %}">FR</a>
+                <a href="{{ url_for('set_language', lang_code='en') }}"
+                   class="lang-btn {% if get_language() == 'en' %}lang-btn--active{% endif %}">EN</a>
+                <a href="{{ url_for('set_language', lang_code='ar') }}"
+                   class="lang-btn {% if get_language() == 'ar' %}lang-btn--active{% endif %}">AR</a>
+            </div>
+
+            {% block nav_right %}
+                <a href="{{ url_for('logout') }}" class="nav-login">{{ t('nav.logout') }}</a>
+            {% endblock %}
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>
