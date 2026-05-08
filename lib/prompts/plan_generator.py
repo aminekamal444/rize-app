@@ -52,14 +52,21 @@ Rules for the plan:
 3. Include at least 4 recovery/lighter days spread across the 30 days. Mark them with is_recovery_day: true and focus_pillar: "recovery".
 4. Actions must be SPECIFIC and immediately actionable:
    - Bad: "drink water"
-   - Good: "drink 2 litres of water before 6pm — set a reminder at 10am and 3pm"
+   - Good: "drink 2 litres of water throughout the day — keep a bottle with you"
 5. Weight actions toward the pillars with the lowest scores and the insecurities identified above.
 6. Respect the user's stated biggest goal — weave it throughout.
 7. Escalate gradually: Week 1 is lighter and habit-forming, Week 4 has fuller routines.
 8. Include at least one action with the word "haircut" in its title (this triggers the barber card feature).
 9. On days 7, 14, 21, and 28 — include an action with "weekly photo" in its title (triggers the weekly check-in feature).
 10. All text must be in {language}.
-11. STRICT RULE: The "focus_pillar" and "pillar" fields can ONLY be one of these EXACT values:
+11. STRICT RULE — NO SPECIFIC CLOCK TIMES: Never use specific clock times in actions. Do not say "18h", "20h", "8 AM", "before 6 PM", or any hour-specific deadline. Instead use flexible time references:
+    - Workouts and physical activities: use "dans la journée" (during the day) or "quand tu as 10 minutes"
+    - Evening routines (skincare, reflection): use "avant le coucher" (before bed) or "le soir"
+    - Morning routines: use "le matin" (in the morning) or "au réveil" (when you wake up)
+    - All-day tasks (hydration, posture): use "tout au long de la journée" (throughout the day)
+    Pick the most natural flexible time reference based on the action's nature.
+12. STRICT RULE — LOGICAL ORDERING: If an action involves buying something (clothing, products), the user cannot use it on the same day. Do not say "try on the new pants for 2 hours today" on the same day you tell them to buy the pants. The "try it" or "use it" guidance should appear on a LATER day, or be phrased flexibly: "as soon as you have them" or "in the following days".
+13. STRICT RULE: The "focus_pillar" and "pillar" fields can ONLY be one of these EXACT values:
     - hair      (haircut, beard, scalp care)
     - style     (clothing, accessories, color, fit, wardrobe, fashion, outfit)
     - fitness   (exercise, posture, body, mobility, sleep, nutrition)
@@ -145,10 +152,16 @@ Rules:
 1. Generate exactly the days {day_start} to {day_end}, no fewer, no more.
 2. Each day has 1 to 3 actions — vary the count, do not always use 3.
 3. Include at least one recovery/lighter day in this chunk. Mark it with is_recovery_day: true and focus_pillar: "recovery".
-4. Actions must be SPECIFIC and immediately actionable (not "drink water" — "drink 2L of water before 6pm").
+4. Actions must be SPECIFIC and immediately actionable (not "drink water" — "drink 2L of water throughout the day").
 5. Weight actions toward the pillars with the lowest scores and the insecurities identified above.
 6. All text must be in {language}.
-7. STRICT RULE: The "focus_pillar" and "pillar" fields can ONLY be one of these EXACT values:
+7. STRICT RULE — NO SPECIFIC CLOCK TIMES: Never use specific clock times in actions. Do not say "18h", "20h", "8 AM", "before 6 PM", or any hour-specific deadline. Instead use flexible time references:
+    - Workouts and physical activities: use "dans la journée" or "quand tu as 10 minutes"
+    - Evening routines (skincare, reflection): use "avant le coucher" or "le soir"
+    - Morning routines: use "le matin" or "au réveil"
+    - All-day tasks (hydration, posture): use "tout au long de la journée"
+8. STRICT RULE — LOGICAL ORDERING: If an action involves buying something, the user cannot use it on the same day. The "try it" or "use it" guidance should appear on a LATER day, or be phrased "as soon as you have them".
+9. STRICT RULE: The "focus_pillar" and "pillar" fields can ONLY be one of these EXACT values:
     - hair      (haircut, beard, scalp care)
     - style     (clothing, accessories, color, fit, wardrobe, fashion, outfit)
     - fitness   (exercise, posture, body, mobility, sleep, nutrition)
@@ -210,12 +223,14 @@ Scores: Hair {hair_score}, Style {style_score}, Fitness {fitness_score}, Skin {s
 
 Rules:
 - 30 days, 1–3 actions each, at least 4 recovery days
-- Actions must be specific (not "drink water" — "drink 2L water before 6pm")
+- Actions must be specific (not "drink water" — "drink 2L water throughout the day")
 - Weight toward lowest-scoring pillars
 - Week 1 lighter, Week 4 fuller
 - Day 7, 14, 21, 28 must include action with "weekly photo" in title
 - Include one action with "haircut" in title
 - All text in {language}
+- STRICT RULE — NO SPECIFIC CLOCK TIMES: Never use "18h", "20h", "8 AM", "before 6 PM" or any hour. Use flexible references: workouts → "dans la journée", evening care → "avant le coucher", morning → "le matin", all-day → "tout au long de la journée"
+- STRICT RULE — LOGICAL ORDERING: Never tell the user to use/try something the same day they're told to buy it. The usage action must appear on a LATER day or say "as soon as you have them"
 - STRICT RULE: focus_pillar and pillar ONLY from: hair, style, fitness, skin, recovery
   Map anything else: posture→fitness, mindset→recovery, wardrobe→style, grooming→skin
 

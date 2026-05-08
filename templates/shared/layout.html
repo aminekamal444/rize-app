@@ -13,7 +13,8 @@
         <h1 class="logo">RIZE</h1>
 
         <div class="nav-right">
-            {# Language switcher #}
+            {# Language switcher — only shown on pre-onboarding pages #}
+            {% if show_lang_switcher %}
             <div class="lang-switcher">
                 <a href="{{ url_for('set_language', lang_code='fr') }}"
                    class="lang-btn {% if get_language() == 'fr' %}lang-btn--active{% endif %}">FR</a>
@@ -22,6 +23,7 @@
                 <a href="{{ url_for('set_language', lang_code='ar') }}"
                    class="lang-btn {% if get_language() == 'ar' %}lang-btn--active{% endif %}">AR</a>
             </div>
+            {% endif %}
 
             {% block nav_right %}
                 <a href="{{ url_for('logout') }}" class="nav-login">{{ t('nav.logout') }}</a>

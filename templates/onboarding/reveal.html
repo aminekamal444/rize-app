@@ -13,9 +13,15 @@
         {# --- Overall score reveal --- #}
         <div class="reveal-score-block">
             <p class="reveal-score-label">{{ t('onboarding.reveal.score_label') }}</p>
-            <div class="reveal-score-number">{{ scores.overall }}</div>
+            <div class="reveal-score-row">
+                <span class="reveal-score-number">{{ scores.overall }}</span><span class="reveal-score-max">/100</span>
+            </div>
+            {% set s = scores.overall %}
+            {% if s >= 70 %}{% set bar_color = '#7DA67D' %}
+            {% elif s >= 50 %}{% set bar_color = '#c9a84c' %}
+            {% else %}{% set bar_color = '#C97C7C' %}{% endif %}
             <div class="reveal-score-bar">
-                <div class="reveal-score-fill" style="width: {{ scores.overall }}%"></div>
+                <div class="reveal-score-fill" style="width: {{ s }}%; background-color: {{ bar_color }};"></div>
             </div>
         </div>
 
@@ -26,13 +32,15 @@
                 <h2 class="reveal-archetype-name">{{ profile.archetype or '—' }}</h2>
             </div>
             <div class="reveal-archetype-arrow">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" aria-hidden="true">
-                    {% if is_rtl() %}
+                {% if is_rtl() %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" aria-hidden="true">
                     <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-                    {% else %}
-                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
-                    {% endif %}
                 </svg>
+                {% else %}
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a84c" stroke-width="2" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                </svg>
+                {% endif %}
             </div>
             <div class="reveal-archetype-block">
                 <p class="reveal-archetype-label">{{ t('onboarding.reveal.target_label') }}</p>
@@ -51,10 +59,13 @@
                     ('skin',    t('onboarding.reveal.pillar.skin'),    scores.skin),
                 ] %}
                 {% for key, label, value in pillars %}
+                {% if value >= 70 %}{% set pbar_color = '#7DA67D' %}
+                {% elif value >= 50 %}{% set pbar_color = '#c9a84c' %}
+                {% else %}{% set pbar_color = '#C97C7C' %}{% endif %}
                 <div class="score-item">
                     <span>{{ label }}</span>
                     <div class="score-bar">
-                        <div class="score-fill" style="width: {{ value }}%"></div>
+                        <div class="score-fill" style="width: {{ value }}%; background-color: {{ pbar_color }};"></div>
                     </div>
                     <span class="score-num">{{ value }}</span>
                 </div>

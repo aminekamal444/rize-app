@@ -1,35 +1,28 @@
 {% extends "shared/layout.html" %}
 
-{% block title %}RIZE — Login{% endblock %}
+{% block title %}RIZE — {{ t('auth.login_title') }}{% endblock %}
 
 {% block nav_right %}
-    <a href="{{ url_for('signup') }}" class="nav-login">Sign Up</a>
+    <a href="{{ url_for('signup') }}" class="nav-login">{{ t('nav.signup') }}</a>
 {% endblock %}
 
 {% block content %}
 <section class="auth-section">
     <div class="auth-card">
-        <h2>Welcome Back</h2>
-        <p class="auth-sub">Login to continue your glow up</p>
-
-        <button class="btn-google" disabled>
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20"/>
-            Continue with Google
-        </button>
-
-        <div class="divider"><span>or</span></div>
+        <h2>{{ t('auth.login_title') }}</h2>
+        <p class="auth-sub">{{ t('auth.login_sub') }}</p>
 
         {% if error %}
         <div class="onboarding-error">{{ error }}</div>
         {% endif %}
 
         <form class="auth-form" action="{{ url_for('login_post') }}" method="POST">
-            <input type="email" name="email" placeholder="Email address" required />
-            <input type="password" name="password" placeholder="Password" required />
-            <button type="submit" class="btn">Login</button>
+            <input type="email" name="email" placeholder="{{ t('auth.email_placeholder') }}" required />
+            <input type="password" name="password" placeholder="{{ t('auth.password_login_placeholder') }}" required />
+            <button type="submit" class="btn">{{ t('auth.login_btn') }}</button>
         </form>
 
-        <p class="auth-link">Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
+        <p class="auth-link">{{ t('auth.no_account') }} <a href="{{ url_for('signup') }}">{{ t('auth.no_account_link') }}</a></p>
     </div>
 </section>
 {% endblock %}

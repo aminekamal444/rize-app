@@ -24,6 +24,17 @@ app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
 def inject_i18n():
     return {"t": t, "get_language": get_language, "is_rtl": is_rtl}
 
+@app.context_processor
+def inject_layout_flags():
+    from flask import request
+    show_lang_switcher = request.endpoint in (
+        "home",
+        "signup",
+        "login",
+        "onboarding_language",
+    )
+    return {"show_lang_switcher": show_lang_switcher}
+
 
 def clean(value):
     return value.replace("_", " ").title() if value else ""
@@ -732,34 +743,37 @@ def onboarding_profile_post():
     user_id = get_current_user()
     display_name = (request.form.get("display_name") or "").strip()
     city = (request.form.get("city") or "").strip()
-    age_raw = (request.form.get("age") or "").strip()
+    age_range = (request.form.get("age_range") or "").strip()
+
+    # Map age range string to a representative integer for the age column
+    age_range_map = {
+        "under_20": 18,
+        "20_25": 22,
+        "25_30": 27,
+        "30_plus": 32,
+    }
 
     error = None
     if not display_name:
         error = t("onboarding.profile.error.name")
-    else:
-        try:
-            age = int(age_raw)
-            if not (13 <= age <= 120):
-                raise ValueError
-        except (ValueError, TypeError):
-            error = t("onboarding.profile.error.age")
+    elif age_range not in age_range_map:
+        error = t("onboarding.profile.error.age")
 
     if error:
         return render_template("onboarding/profile.html", cities=MOROCCAN_CITIES, error=error,
-                               display_name=display_name, city=city, age=age_raw)
+                               display_name=display_name, city=city, age_range=age_range)
 
     try:
         db = _db()
         db.table("profiles").update({
             "display_name": display_name,
             "city": city,
-            "age": int(age_raw),
+            "age": age_range_map[age_range],
             "onboarding_step": 2,
         }).eq("id", user_id).execute()
     except Exception as exc:
         return render_template("onboarding/profile.html", cities=MOROCCAN_CITIES,
-                               error=str(exc), display_name=display_name, city=city, age=age_raw)
+                               error=str(exc), display_name=display_name, city=city, age_range=age_range)
 
     return redirect(url_for("onboarding_goal"))
 

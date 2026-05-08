@@ -1,54 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RIZE</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "shared/layout.html" %}
 
-    <nav>
-        <h1 class="logo">RIZE</h1>
-        <a href="/login" class="nav-login">Login</a>
-    </nav>
+{% block title %}RIZE{% endblock %}
+
+{% block nav_right %}
+    <a href="{{ url_for('login') }}" class="nav-login">{{ t('nav.login') }}</a>
+{% endblock %}
+
+{% block content %}
 
     <section class="hero">
-        <p class="hero-tag">AI Powered Glow Up</p>
-        <h2>Become The Best<br>Version Of Yourself</h2>
-        <p class="hero-sub">Get your personal glow up score and a 30 day plan to transform your hair, beard, body, style and skin.</p>
-        <a href="/signup" class="btn">Start My Glow Up</a>
+        <p class="hero-tag">{{ t('landing.hero_tag') }}</p>
+        <h2>{{ t('landing.hero_title') }}</h2>
+        <p class="hero-sub">{{ t('landing.hero_sub') }}</p>
+        <a href="{{ url_for('signup') }}" class="btn">{{ t('landing.hero_cta') }}</a>
     </section>
 
-   <section class="features">
-    <div class="feature-card">
-        <div class="card-number">01</div>
-        <h3>Hair & Beard</h3>
-        <p>Best cuts for your face shape and hair texture</p>
-    </div>
-    <div class="feature-card">
-        <div class="card-number">02</div>
-        <h3>Style & Outfits</h3>
-        <p>Colors and fits that suit your body and skin tone</p>
-    </div>
-    <div class="feature-card">
-        <div class="card-number">03</div>
-        <h3>Body & Fitness</h3>
-        <p>Workout plan personalized to your goals</p>
-    </div>
-    <div class="feature-card">
-        <div class="card-number">04</div>
-        <h3>Skin & Grooming</h3>
-        <p>Daily routine built for your skin type</p>
-    </div>
-</section>
+    <section class="features">
+        <div class="feature-card">
+            <div class="card-number">01</div>
+            <h3>{{ t('landing.feature.01.title') }}</h3>
+            <p>{{ t('landing.feature.01.sub') }}</p>
+        </div>
+        <div class="feature-card">
+            <div class="card-number">02</div>
+            <h3>{{ t('landing.feature.02.title') }}</h3>
+            <p>{{ t('landing.feature.02.sub') }}</p>
+        </div>
+        <div class="feature-card">
+            <div class="card-number">03</div>
+            <h3>{{ t('landing.feature.03.title') }}</h3>
+            <p>{{ t('landing.feature.03.sub') }}</p>
+        </div>
+        <div class="feature-card">
+            <div class="card-number">04</div>
+            <h3>{{ t('landing.feature.04.title') }}</h3>
+            <p>{{ t('landing.feature.04.sub') }}</p>
+        </div>
+    </section>
 
     <section class="scores">
         <div class="scores-text">
-            <p class="hero-tag">Your Glow Up Score</p>
-            <h2>Track Your Progress<br>Over 30 Days</h2>
-            <p class="hero-sub">Every day you complete your tasks, your score goes up. Watch yourself transform in real time.</p>
-            <a href="/signup" class="btn">Get My Score</a>
+            <p class="hero-tag">{{ t('landing.scores.tag') }}</p>
+            <h2>{{ t('landing.scores.title') }}</h2>
+            <p class="hero-sub">{{ t('landing.scores.sub') }}</p>
+            <a href="{{ url_for('signup') }}" class="btn">{{ t('landing.scores.cta') }}</a>
         </div>
         <div class="scores-cards">
             <div class="score-item">
@@ -81,10 +76,9 @@
 
     <footer>
         <h2 class="logo">RIZE</h2>
-        <p>Your 30 day transformation starts today.</p>
-        <a href="/signup" class="btn">Start For Free</a>
-        <p class="footer-small">Powered by AI — Built for Men</p>
+        <p>{{ t('landing.footer.sub') }}</p>
+        <a href="{{ url_for('signup') }}" class="btn">{{ t('landing.footer.cta') }}</a>
+        <p class="footer-small">{{ t('landing.footer.watermark') }}</p>
     </footer>
 
-</body>
-</html>
+{% endblock %}

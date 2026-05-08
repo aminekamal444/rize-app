@@ -1,36 +1,29 @@
 {% extends "shared/layout.html" %}
 
-{% block title %}RIZE — Sign Up{% endblock %}
+{% block title %}RIZE — {{ t('auth.signup_title') }}{% endblock %}
 
 {% block nav_right %}
-    <a href="{{ url_for('login') }}" class="nav-login">Login</a>
+    <a href="{{ url_for('login') }}" class="nav-login">{{ t('nav.login') }}</a>
 {% endblock %}
 
 {% block content %}
 <section class="auth-section">
     <div class="auth-card">
-        <h2>Create Your Account</h2>
-        <p class="auth-sub">Start your 30-day transformation</p>
-
-        <button class="btn-google" disabled>
-            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20"/>
-            Continue with Google
-        </button>
-
-        <div class="divider"><span>or</span></div>
+        <h2>{{ t('auth.signup_title') }}</h2>
+        <p class="auth-sub">{{ t('auth.signup_sub') }}</p>
 
         {% if error %}
         <div class="onboarding-error">{{ error }}</div>
         {% endif %}
 
         <form class="auth-form" action="{{ url_for('signup_post') }}" method="POST">
-            <input type="email" name="email" placeholder="Email address" value="{{ email or '' }}" required />
-            <input type="password" name="password" placeholder="Password (min 6 characters)" required />
-            <input type="password" name="confirm_password" placeholder="Confirm password" required />
-            <button type="submit" class="btn">Create Account</button>
+            <input type="email" name="email" placeholder="{{ t('auth.email_placeholder') }}" value="{{ email or '' }}" required />
+            <input type="password" name="password" placeholder="{{ t('auth.password_placeholder') }}" required />
+            <input type="password" name="confirm_password" placeholder="{{ t('auth.confirm_password_placeholder') }}" required />
+            <button type="submit" class="btn">{{ t('auth.create_account_btn') }}</button>
         </form>
 
-        <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+        <p class="auth-link">{{ t('auth.already_have_account') }} <a href="{{ url_for('login') }}">{{ t('auth.already_have_account_link') }}</a></p>
     </div>
 </section>
 {% endblock %}

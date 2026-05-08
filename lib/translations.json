@@ -1,4 +1,182 @@
 {
+  "nav.login": {
+    "fr": "Connexion",
+    "en": "Login",
+    "ar": "تسجيل الدخول"
+  },
+  "nav.signup": {
+    "fr": "Inscription",
+    "en": "Sign Up",
+    "ar": "إنشاء حساب"
+  },
+
+  "landing.hero_tag": {
+    "fr": "Coaching IA Glow Up",
+    "en": "AI Powered Glow Up",
+    "ar": "تحسين المظهر بالذكاء الاصطناعي"
+  },
+  "landing.hero_title": {
+    "fr": "Deviens la meilleure version de toi-même",
+    "en": "Become The Best Version Of Yourself",
+    "ar": "كن أفضل نسخة من نفسك"
+  },
+  "landing.hero_sub": {
+    "fr": "Obtiens ton score personnel et un plan 30 jours pour transformer tes cheveux, ta barbe, ton corps, ton style et ta peau.",
+    "en": "Get your personal glow up score and a 30-day plan to transform your hair, beard, body, style and skin.",
+    "ar": "احصل على نقطتك الشخصية وخطة 30 يوماً لتحويل شعرك ولحيتك وجسمك وأسلوبك وبشرتك."
+  },
+  "landing.hero_cta": {
+    "fr": "Commencer mon parcours",
+    "en": "Start My Journey",
+    "ar": "ابدأ مساري"
+  },
+  "landing.feature.01.title": {
+    "fr": "Cheveux & Barbe",
+    "en": "Hair & Beard",
+    "ar": "الشعر واللحية"
+  },
+  "landing.feature.01.sub": {
+    "fr": "Les meilleures coupes pour ta morphologie et ta texture de cheveux",
+    "en": "Best cuts for your face shape and hair texture",
+    "ar": "أفضل القصات لشكل وجهك وملمس شعرك"
+  },
+  "landing.feature.02.title": {
+    "fr": "Style & Tenues",
+    "en": "Style & Outfits",
+    "ar": "الأسلوب والملابس"
+  },
+  "landing.feature.02.sub": {
+    "fr": "Couleurs et coupes adaptées à ton corps et ton teint",
+    "en": "Colors and fits that suit your body and skin tone",
+    "ar": "الألوان والقصات التي تناسب جسمك ولون بشرتك"
+  },
+  "landing.feature.03.title": {
+    "fr": "Corps & Fitness",
+    "en": "Body & Fitness",
+    "ar": "الجسم واللياقة"
+  },
+  "landing.feature.03.sub": {
+    "fr": "Programme d'entraînement personnalisé selon tes objectifs",
+    "en": "Workout plan personalized to your goals",
+    "ar": "برنامج تدريبي مخصص لأهدافك"
+  },
+  "landing.feature.04.title": {
+    "fr": "Peau & Soin",
+    "en": "Skin & Grooming",
+    "ar": "البشرة والعناية"
+  },
+  "landing.feature.04.sub": {
+    "fr": "Routine quotidienne adaptée à ton type de peau",
+    "en": "Daily routine built for your skin type",
+    "ar": "روتين يومي مبني لنوع بشرتك"
+  },
+  "landing.scores.tag": {
+    "fr": "Ton Score Glow Up",
+    "en": "Your Glow Up Score",
+    "ar": "نقطة تحسين مظهرك"
+  },
+  "landing.scores.title": {
+    "fr": "Suis ta progression sur 30 jours",
+    "en": "Track Your Progress Over 30 Days",
+    "ar": "تتبع تقدمك على مدى 30 يوماً"
+  },
+  "landing.scores.sub": {
+    "fr": "Chaque jour que tu complètes tes actions, ton score augmente. Regarde ta transformation en temps réel.",
+    "en": "Every day you complete your tasks, your score goes up. Watch yourself transform in real time.",
+    "ar": "كل يوم تكمل فيه مهامك، ترتفع نقطتك. شاهد تحولك في الوقت الفعلي."
+  },
+  "landing.scores.cta": {
+    "fr": "Obtenir mon score",
+    "en": "Get My Score",
+    "ar": "احصل على نقطتي"
+  },
+  "landing.footer.sub": {
+    "fr": "Ta transformation 30 jours commence aujourd'hui.",
+    "en": "Your 30-day transformation starts today.",
+    "ar": "تحولك لمدة 30 يوماً يبدأ اليوم."
+  },
+  "landing.footer.cta": {
+    "fr": "Commencer gratuitement",
+    "en": "Start For Free",
+    "ar": "ابدأ مجاناً"
+  },
+  "landing.footer.watermark": {
+    "fr": "Propulsé par l'IA — Pour les Hommes",
+    "en": "Powered by AI — Built for Men",
+    "ar": "مدعوم بالذكاء الاصطناعي — للرجال"
+  },
+
+  "auth.signup_title": {
+    "fr": "Créer ton compte",
+    "en": "Create Your Account",
+    "ar": "إنشاء حسابك"
+  },
+  "auth.signup_sub": {
+    "fr": "Commence ta transformation de 30 jours",
+    "en": "Start your 30-day transformation",
+    "ar": "ابدأ تحولك لمدة 30 يوماً"
+  },
+  "auth.login_title": {
+    "fr": "Bon retour",
+    "en": "Welcome Back",
+    "ar": "مرحباً بعودتك"
+  },
+  "auth.login_sub": {
+    "fr": "Connecte-toi pour continuer ton parcours",
+    "en": "Login to continue your journey",
+    "ar": "سجّل دخولك لمتابعة مسارك"
+  },
+  "auth.email_placeholder": {
+    "fr": "Adresse email",
+    "en": "Email address",
+    "ar": "البريد الإلكتروني"
+  },
+  "auth.password_placeholder": {
+    "fr": "Mot de passe (6 caractères min.)",
+    "en": "Password (min 6 characters)",
+    "ar": "كلمة المرور (6 أحرف على الأقل)"
+  },
+  "auth.confirm_password_placeholder": {
+    "fr": "Confirmer le mot de passe",
+    "en": "Confirm password",
+    "ar": "تأكيد كلمة المرور"
+  },
+  "auth.password_login_placeholder": {
+    "fr": "Mot de passe",
+    "en": "Password",
+    "ar": "كلمة المرور"
+  },
+  "auth.create_account_btn": {
+    "fr": "Créer mon compte",
+    "en": "Create Account",
+    "ar": "إنشاء الحساب"
+  },
+  "auth.login_btn": {
+    "fr": "Se connecter",
+    "en": "Login",
+    "ar": "تسجيل الدخول"
+  },
+  "auth.already_have_account": {
+    "fr": "Déjà un compte ?",
+    "en": "Already have an account?",
+    "ar": "لديك حساب بالفعل؟"
+  },
+  "auth.already_have_account_link": {
+    "fr": "Connexion",
+    "en": "Login",
+    "ar": "تسجيل الدخول"
+  },
+  "auth.no_account": {
+    "fr": "Pas encore de compte ?",
+    "en": "Don't have an account?",
+    "ar": "ليس لديك حساب؟"
+  },
+  "auth.no_account_link": {
+    "fr": "S'inscrire",
+    "en": "Sign Up",
+    "ar": "إنشاء حساب"
+  },
+
   "common.welcome": {
     "fr": "Bienvenue",
     "en": "Welcome",
@@ -83,14 +261,14 @@
     "ar": "هذه المعلومات تخصّص مسارك."
   },
   "onboarding.profile.name_label": {
-    "fr": "Prénom",
-    "en": "First name",
-    "ar": "الاسم الأول"
+    "fr": "Nom",
+    "en": "Name",
+    "ar": "الاسم"
   },
   "onboarding.profile.name_placeholder": {
-    "fr": "Ton prénom",
-    "en": "Your first name",
-    "ar": "اسمك الأول"
+    "fr": "Ton nom",
+    "en": "Your name",
+    "ar": "اسمك"
   },
   "onboarding.profile.city_label": {
     "fr": "Ville",
@@ -117,15 +295,35 @@
     "en": "Continue",
     "ar": "متابعة"
   },
+  "onboarding.profile.age.under_20": {
+    "fr": "Moins de 20 ans",
+    "en": "Under 20",
+    "ar": "أقل من 20"
+  },
+  "onboarding.profile.age.20_25": {
+    "fr": "20 à 25 ans",
+    "en": "20–25",
+    "ar": "20-25"
+  },
+  "onboarding.profile.age.25_30": {
+    "fr": "25 à 30 ans",
+    "en": "25–30",
+    "ar": "25-30"
+  },
+  "onboarding.profile.age.30_plus": {
+    "fr": "30 ans et plus",
+    "en": "30+",
+    "ar": "30+"
+  },
   "onboarding.profile.error.name": {
-    "fr": "Le prénom est requis.",
-    "en": "First name is required.",
+    "fr": "Le nom est requis.",
+    "en": "Name is required.",
     "ar": "الاسم مطلوب."
   },
   "onboarding.profile.error.age": {
-    "fr": "L'âge doit être entre 13 et 60 ans.",
-    "en": "Age must be between 13 and 60.",
-    "ar": "يجب أن يكون العمر بين 13 و 60 سنة."
+    "fr": "Sélectionne ta tranche d'âge.",
+    "en": "Select your age range.",
+    "ar": "اختر فئتك العمرية."
   },
 
   "onboarding.goal.tag": {
@@ -363,9 +561,9 @@
     "ar": "ما لاحظه الذكاء الاصطناعي"
   },
   "onboarding.reveal.cta": {
-    "fr": "Générer mon plan 30 jours",
-    "en": "Generate my 30-day plan",
-    "ar": "إنشاء خطتي لـ 30 يوماً"
+    "fr": "Construire mon parcours",
+    "en": "Build My Journey",
+    "ar": "ابدأ مساري"
   },
 
   "onboarding.plan.title": {
@@ -461,9 +659,19 @@
     "ar": "سلسلة {n} أيام"
   },
   "today.streak_start": {
-    "fr": "Commence ta série",
-    "en": "Start your streak",
-    "ar": "ابدأ سلسلتك"
+    "fr": "On démarre",
+    "en": "We Begin",
+    "ar": "هيا نبدأ"
+  },
+  "today.first_day_sub": {
+    "fr": "Première journée",
+    "en": "First Day",
+    "ar": "اليوم الأول"
+  },
+  "today.days_in_row": {
+    "fr": "Jours de suite",
+    "en": "Days in a row",
+    "ar": "أيام متتالية"
   },
   "today.actions_title": {
     "fr": "Actions du jour",

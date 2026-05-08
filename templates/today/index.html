@@ -7,24 +7,27 @@
     <div class="today-container">
 
         {# ── Header row: day + streak ─────────────────────────────────── #}
+        {% set journey_day = profile.journey_day or 1 %}
+        {% set streak = profile.streak_current or 0 %}
         <div class="today-topbar">
-            <span class="today-day-tag">
-                {{ t('today.day_of').replace('{day}', (profile.journey_day or 1)|string) }}
-            </span>
-
-            <div class="today-streak-block">
-                {% set streak = profile.streak_current or 0 %}
-                {% if streak > 0 %}
-                    <span class="today-streak-num">{{ streak }}</span>
-                    <span class="today-streak-label">
-                        {{ t('today.streak').replace('{n}', streak|string) }}
-                    </span>
-                {% else %}
-                    <span class="today-streak-label today-streak-label--dim">
-                        {{ t('today.streak_start') }}
-                    </span>
+            <div class="today-topbar-day">
+                <span class="today-day-tag">
+                    {{ t('today.day_of').replace('{day}', journey_day|string) }}
+                </span>
+                {% if journey_day == 1 %}
+                <p class="today-first-day-sub">{{ t('today.first_day_sub') }}</p>
                 {% endif %}
             </div>
+
+            {% if journey_day > 1 and streak > 0 %}
+            <div class="today-streak-block">
+                <span class="today-streak-num">{{ streak }}</span>
+                <div class="today-streak-sep"></div>
+                <span class="today-streak-label">{{ t('today.days_in_row') }}</span>
+            </div>
+            {% elif journey_day == 1 %}
+            <p class="today-streak-label today-streak-label--dim">{{ t('today.streak_start') }}</p>
+            {% endif %}
         </div>
 
         {# ── Profile identity ─────────────────────────────────────────── #}
@@ -79,7 +82,11 @@
                     {% for action in actions %}
                     <li class="action-card {% if action.completed %}action-card--done{% endif %}">
                         <div class="action-card-left">
+                            {% if action.completed %}
+                            <span class="action-card-num action-card-check">✓</span>
+                            {% else %}
                             <span class="action-card-num">{{ '%02d'|format(action.position) }}</span>
+                            {% endif %}
                         </div>
 
                         <div class="action-card-body">
@@ -96,11 +103,11 @@
 
                         <div class="action-card-right">
                             {% if action.completed %}
-                            <span class="action-done-badge">{{ t('today.action.done') }}</span>
+                            <span class="action-done-badge action-done-badge--disabled">{{ t('today.action.done') }}</span>
                             {% else %}
                             <form method="POST"
                                   action="{{ url_for('today_action_done', action_id=action.id) }}">
-                                <button type="submit" class="action-mark-btn">
+                                <button type="submit" class="action-mark-btn action-mark-btn--filled">
                                     {{ t('today.action.mark_done') }}
                                 </button>
                             </form>
@@ -118,7 +125,7 @@
                 <p class="today-cta-label">{{ t('today.all_done_title') }}</p>
                 <p class="today-cta-sub">{{ t('today.all_done_sub') }}</p>
                 <form method="POST" action="{{ url_for('today_complete') }}">
-                    <button type="submit" class="btn today-complete-btn">
+                    <button type="submit" class="btn today-complete-btn today-complete-btn--pulse">
                         {{ t('today.complete_day_btn') }}
                     </button>
                 </form>

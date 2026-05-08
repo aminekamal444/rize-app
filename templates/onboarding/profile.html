@@ -46,17 +46,21 @@
             </div>
 
             <div class="form-group">
-                <label for="age">{{ t('onboarding.profile.age_label') }}</label>
-                <input
-                    type="number"
-                    id="age"
-                    name="age"
-                    placeholder="{{ t('onboarding.profile.age_placeholder') }}"
-                    value="{{ age or '' }}"
-                    min="13"
-                    max="120"
-                    required
-                >
+                <label>{{ t('onboarding.profile.age_label') }}</label>
+                <div class="age-range-cards">
+                    {% set age_ranges = [
+                        ('under_20', t('onboarding.profile.age.under_20')),
+                        ('20_25',    t('onboarding.profile.age.20_25')),
+                        ('25_30',    t('onboarding.profile.age.25_30')),
+                        ('30_plus',  t('onboarding.profile.age.30_plus')),
+                    ] %}
+                    {% for value, label in age_ranges %}
+                    <label class="age-range-card {% if age_range == value %}age-range-card--active{% endif %}">
+                        <input type="radio" name="age_range" value="{{ value }}" {% if age_range == value %}checked{% endif %} required>
+                        <span>{{ label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
             </div>
 
             <button type="submit" class="btn onboarding-submit">{{ t('onboarding.profile.submit') }}</button>

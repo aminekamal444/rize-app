@@ -11,8 +11,7 @@
         <div class="onboarding-step-tag">01 / 05</div>
 
         <div class="onboarding-header">
-            <h2>Choose your language</h2>
-            <p class="onboarding-sub">Toutes les recommandations seront dans cette langue. / All recommendations will be in this language. / ستكون جميع التوصيات بهذه اللغة.</p>
+            <h2>{{ t('onboarding.language.title') }}</h2>
         </div>
 
         <form method="POST" action="{{ url_for('onboarding_language_post') }}">
@@ -21,19 +20,19 @@
                 <button type="submit" name="language" value="fr" class="lang-card {% if get_language() == 'fr' %}lang-card--active{% endif %}">
                     <span class="lang-card-code">FR</span>
                     <span class="lang-card-name">Français</span>
-                    <span class="lang-card-sub">French</span>
+                    <span class="lang-card-sub">Toutes les recommandations en français</span>
                 </button>
 
                 <button type="submit" name="language" value="en" class="lang-card {% if get_language() == 'en' %}lang-card--active{% endif %}">
                     <span class="lang-card-code">EN</span>
                     <span class="lang-card-name">English</span>
-                    <span class="lang-card-sub">Anglais</span>
+                    <span class="lang-card-sub">All recommendations in English</span>
                 </button>
 
                 <button type="submit" name="language" value="ar" class="lang-card {% if get_language() == 'ar' %}lang-card--active{% endif %}">
                     <span class="lang-card-code">AR</span>
                     <span class="lang-card-name">العربية</span>
-                    <span class="lang-card-sub">Arabic</span>
+                    <span class="lang-card-sub">جميع التوصيات باللغة العربية</span>
                 </button>
 
             </div>
