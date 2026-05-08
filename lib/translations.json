@@ -43,5 +43,516 @@
     "fr": "S'inscrire",
     "en": "Sign up",
     "ar": "إنشاء حساب"
+  },
+
+  "onboarding.step_of": {
+    "fr": "Étape {current} sur {total}",
+    "en": "Step {current} of {total}",
+    "ar": "الخطوة {current} من {total}"
+  },
+
+  "onboarding.language.tag": {
+    "fr": "Langue",
+    "en": "Language",
+    "ar": "اللغة"
+  },
+  "onboarding.language.title": {
+    "fr": "Choisis ta langue",
+    "en": "Choose your language",
+    "ar": "اختر لغتك"
+  },
+  "onboarding.language.subtitle": {
+    "fr": "Toutes les recommandations seront dans cette langue.",
+    "en": "All recommendations will be in this language.",
+    "ar": "ستكون جميع التوصيات بهذه اللغة."
+  },
+
+  "onboarding.profile.tag": {
+    "fr": "Profil",
+    "en": "Profile",
+    "ar": "الملف الشخصي"
+  },
+  "onboarding.profile.title": {
+    "fr": "Parle-nous de toi",
+    "en": "Tell us about yourself",
+    "ar": "أخبرنا عن نفسك"
+  },
+  "onboarding.profile.subtitle": {
+    "fr": "Ces informations personnalisent ton parcours.",
+    "en": "This personalizes your journey.",
+    "ar": "هذه المعلومات تخصّص مسارك."
+  },
+  "onboarding.profile.name_label": {
+    "fr": "Prénom",
+    "en": "First name",
+    "ar": "الاسم الأول"
+  },
+  "onboarding.profile.name_placeholder": {
+    "fr": "Ton prénom",
+    "en": "Your first name",
+    "ar": "اسمك الأول"
+  },
+  "onboarding.profile.city_label": {
+    "fr": "Ville",
+    "en": "City",
+    "ar": "المدينة"
+  },
+  "onboarding.profile.city_other": {
+    "fr": "Autre ville",
+    "en": "Other city",
+    "ar": "مدينة أخرى"
+  },
+  "onboarding.profile.age_label": {
+    "fr": "Âge",
+    "en": "Age",
+    "ar": "العمر"
+  },
+  "onboarding.profile.age_placeholder": {
+    "fr": "Ton âge",
+    "en": "Your age",
+    "ar": "عمرك"
+  },
+  "onboarding.profile.submit": {
+    "fr": "Continuer",
+    "en": "Continue",
+    "ar": "متابعة"
+  },
+  "onboarding.profile.error.name": {
+    "fr": "Le prénom est requis.",
+    "en": "First name is required.",
+    "ar": "الاسم مطلوب."
+  },
+  "onboarding.profile.error.age": {
+    "fr": "L'âge doit être entre 13 et 60 ans.",
+    "en": "Age must be between 13 and 60.",
+    "ar": "يجب أن يكون العمر بين 13 و 60 سنة."
+  },
+
+  "onboarding.goal.tag": {
+    "fr": "Objectif",
+    "en": "Goal",
+    "ar": "الهدف"
+  },
+  "onboarding.goal.title": {
+    "fr": "Ton objectif en 30 jours",
+    "en": "Your 30-day goal",
+    "ar": "هدفك في 30 يوماً"
+  },
+  "onboarding.goal.prompt": {
+    "fr": "En une phrase, qu'est-ce que tu veux changer le plus en 30 jours ?",
+    "en": "In one sentence, what do you most want to change in 30 days?",
+    "ar": "في جملة واحدة، ما الذي تريد تغييره أكثر شيء خلال 30 يوماً؟"
+  },
+  "onboarding.goal.placeholder": {
+    "fr": "Ex : Je veux développer une routine quotidienne et m'habiller avec plus de style.",
+    "en": "E.g. I want to build a daily routine and start dressing with more intention.",
+    "ar": "مثال: أريد بناء روتين يومي والاهتمام أكثر بمظهري."
+  },
+  "onboarding.goal.submit": {
+    "fr": "Continuer",
+    "en": "Continue",
+    "ar": "متابعة"
+  },
+  "onboarding.goal.error": {
+    "fr": "Dis-nous ton objectif pour continuer.",
+    "en": "Tell us your goal to continue.",
+    "ar": "أخبرنا بهدفك للمتابعة."
+  },
+
+  "onboarding.insecurity.tag": {
+    "fr": "Confiance",
+    "en": "Confidence",
+    "ar": "الثقة بالنفس"
+  },
+  "onboarding.insecurity.title": {
+    "fr": "Sois honnête avec toi-même",
+    "en": "Be honest with yourself",
+    "ar": "كن صادقاً مع نفسك"
+  },
+  "onboarding.insecurity.prompt": {
+    "fr": "C'est quoi la chose dans ton apparence dont tu es le moins fier en ce moment ? Sois honnête — ça reste privé et ça aide le coach à personnaliser ton plan.",
+    "en": "What's one thing about how you look right now that you're least confident about? Be honest — this stays private and helps the coach personalize your plan.",
+    "ar": "ما هو الشيء الذي تشعر بأقل ثقة بنفسك فيه من مظهرك الآن؟ كن صريحاً — هذا يبقى خاصاً ويساعد المدرب على تخصيص خطتك."
+  },
+  "onboarding.insecurity.placeholder": {
+    "fr": "Ex : Je me sens toujours négligé — je n'ai pas de style vestimentaire et ma peau est en mauvais état.",
+    "en": "E.g. I always look unkempt — I have no sense of style and my skin is in bad shape.",
+    "ar": "مثال: أبدو دائماً مهملاً — ليس عندي أسلوب في اللباس وبشرتي في حالة سيئة."
+  },
+  "onboarding.insecurity.submit": {
+    "fr": "Continuer",
+    "en": "Continue",
+    "ar": "متابعة"
+  },
+  "onboarding.insecurity.error": {
+    "fr": "Partage cette information pour que le coach puisse t'aider.",
+    "en": "Share this so the coach can help you.",
+    "ar": "شارك هذا حتى يتمكن المدرب من مساعدتك."
+  },
+
+  "onboarding.photo.tag": {
+    "fr": "Photo de départ",
+    "en": "Baseline photo",
+    "ar": "صورة البداية"
+  },
+  "onboarding.photo.title": {
+    "fr": "Ta photo de départ",
+    "en": "Your baseline photo",
+    "ar": "صورتك الأساسية"
+  },
+  "onboarding.photo.subtitle": {
+    "fr": "Cette photo est analysée par l'IA pour calibrer ton point de départ. Elle reste privée.",
+    "en": "This photo is analyzed by AI to calibrate your starting point. It stays private.",
+    "ar": "يتم تحليل هذه الصورة بالذكاء الاصطناعي لتحديد نقطة انطلاقك. تبقى خاصة."
+  },
+  "onboarding.photo.guide_title": {
+    "fr": "Pour une analyse précise :",
+    "en": "For an accurate analysis:",
+    "ar": "للحصول على تحليل دقيق:"
+  },
+  "onboarding.photo.guide_1": {
+    "fr": "Face à la caméra, expression neutre",
+    "en": "Face the camera, neutral expression",
+    "ar": "واجه الكاميرا بتعبير محايد"
+  },
+  "onboarding.photo.guide_2": {
+    "fr": "Haut du corps entier visible",
+    "en": "Full upper body visible",
+    "ar": "الجزء العلوي من الجسم كاملاً"
+  },
+  "onboarding.photo.guide_3": {
+    "fr": "Bonne lumière, pas de contre-jour",
+    "en": "Good lighting, no harsh backlight",
+    "ar": "إضاءة جيدة، بدون ضوء خلفي"
+  },
+  "onboarding.photo.guide_4": {
+    "fr": "Cheveux dégagés si possible",
+    "en": "Hair pulled back if possible",
+    "ar": "شعر مكشوف إن أمكن"
+  },
+  "onboarding.photo.upload_label": {
+    "fr": "Choisir une photo",
+    "en": "Choose a photo",
+    "ar": "اختر صورة"
+  },
+  "onboarding.photo.upload_hint": {
+    "fr": "JPG ou PNG — la photo ne sera jamais partagée",
+    "en": "JPG or PNG — your photo is never shared",
+    "ar": "JPG أو PNG — صورتك لن تُشارك أبداً"
+  },
+  "onboarding.photo.submit": {
+    "fr": "Analyser ma photo",
+    "en": "Analyze my photo",
+    "ar": "تحليل صورتي"
+  },
+  "onboarding.photo.error.no_file": {
+    "fr": "Choisis une photo pour continuer.",
+    "en": "Choose a photo to continue.",
+    "ar": "اختر صورة للمتابعة."
+  },
+  "onboarding.photo.error.invalid": {
+    "fr": "Le fichier doit être une image (JPG ou PNG).",
+    "en": "The file must be an image (JPG or PNG).",
+    "ar": "يجب أن يكون الملف صورة (JPG أو PNG)."
+  },
+  "onboarding.photo.error.upload": {
+    "fr": "Erreur lors de l'envoi de la photo. Réessaie.",
+    "en": "Error uploading photo. Please try again.",
+    "ar": "خطأ في رفع الصورة. حاول مرة أخرى."
+  },
+
+  "onboarding.analyzing.title": {
+    "fr": "Calibration en cours...",
+    "en": "Calibrating your baseline...",
+    "ar": "جارٍ معايرة نقطة انطلاقك..."
+  },
+  "onboarding.analyzing.subtitle": {
+    "fr": "L'IA analyse ta photo. Cela prend quelques secondes.",
+    "en": "The AI is analyzing your photo. This takes a few seconds.",
+    "ar": "يقوم الذكاء الاصطناعي بتحليل صورتك. يستغرق هذا بضع ثوانٍ."
+  },
+  "onboarding.analyzing.step_1": {
+    "fr": "Analyse de la structure faciale",
+    "en": "Analyzing facial structure",
+    "ar": "تحليل بنية الوجه"
+  },
+  "onboarding.analyzing.step_2": {
+    "fr": "Évaluation du style et de la silhouette",
+    "en": "Evaluating style and silhouette",
+    "ar": "تقييم الأسلوب والصورة"
+  },
+  "onboarding.analyzing.step_3": {
+    "fr": "Calibration du score de départ",
+    "en": "Calibrating baseline score",
+    "ar": "معايرة النتيجة الأساسية"
+  },
+  "onboarding.analyzing.step_4": {
+    "fr": "Identification de l'archétype",
+    "en": "Identifying archetype",
+    "ar": "تحديد النمط"
+  },
+  "onboarding.analyzing.error": {
+    "fr": "Une erreur s'est produite lors de l'analyse. Réessaie.",
+    "en": "An error occurred during analysis. Please try again.",
+    "ar": "حدث خطأ أثناء التحليل. حاول مرة أخرى."
+  },
+  "onboarding.analyzing.retry": {
+    "fr": "Réessayer",
+    "en": "Try again",
+    "ar": "حاول مرة أخرى"
+  },
+
+  "onboarding.reveal.tag": {
+    "fr": "Résultat",
+    "en": "Result",
+    "ar": "النتيجة"
+  },
+  "onboarding.reveal.score_label": {
+    "fr": "Score de départ",
+    "en": "Baseline score",
+    "ar": "النتيجة الأساسية"
+  },
+  "onboarding.reveal.current_archetype_label": {
+    "fr": "Ton archétype actuel",
+    "en": "Your current archetype",
+    "ar": "نمطك الحالي"
+  },
+  "onboarding.reveal.target_label": {
+    "fr": "Destination 30 jours",
+    "en": "30-day destination",
+    "ar": "وجهتك خلال 30 يوماً"
+  },
+  "onboarding.reveal.scores_title": {
+    "fr": "Scores détaillés",
+    "en": "Detailed scores",
+    "ar": "النتائج التفصيلية"
+  },
+  "onboarding.reveal.pillar.hair": {
+    "fr": "Cheveux",
+    "en": "Hair",
+    "ar": "الشعر"
+  },
+  "onboarding.reveal.pillar.style": {
+    "fr": "Style",
+    "en": "Style",
+    "ar": "الأسلوب"
+  },
+  "onboarding.reveal.pillar.fitness": {
+    "fr": "Forme",
+    "en": "Fitness",
+    "ar": "اللياقة"
+  },
+  "onboarding.reveal.pillar.skin": {
+    "fr": "Peau",
+    "en": "Skin",
+    "ar": "البشرة"
+  },
+  "onboarding.reveal.strength_label": {
+    "fr": "Point fort",
+    "en": "Strength",
+    "ar": "نقطة القوة"
+  },
+  "onboarding.reveal.improvement_label": {
+    "fr": "Priorité d'amélioration",
+    "en": "Top priority",
+    "ar": "أولوية التحسين"
+  },
+  "onboarding.reveal.observations_title": {
+    "fr": "Ce que l'IA a observé",
+    "en": "What the AI observed",
+    "ar": "ما لاحظه الذكاء الاصطناعي"
+  },
+  "onboarding.reveal.cta": {
+    "fr": "Générer mon plan 30 jours",
+    "en": "Generate my 30-day plan",
+    "ar": "إنشاء خطتي لـ 30 يوماً"
+  },
+
+  "onboarding.plan.title": {
+    "fr": "Construction de ton plan...",
+    "en": "Building your plan...",
+    "ar": "جارٍ بناء خطتك..."
+  },
+  "onboarding.plan.subtitle": {
+    "fr": "L'IA construit ton parcours personnalisé sur 30 jours. Cela peut prendre une dizaine de secondes.",
+    "en": "The AI is building your personalized 30-day journey. This may take around 10 seconds.",
+    "ar": "يبني الذكاء الاصطناعي مسارك الشخصي لمدة 30 يوماً. قد يستغرق ذلك حوالي 10 ثوانٍ."
+  },
+  "onboarding.plan.step_1": {
+    "fr": "Analyse de ton profil",
+    "en": "Analyzing your profile",
+    "ar": "تحليل ملفك الشخصي"
+  },
+  "onboarding.plan.step_2": {
+    "fr": "Structuration des 30 jours",
+    "en": "Structuring 30 days",
+    "ar": "هيكلة الـ 30 يوماً"
+  },
+  "onboarding.plan.step_3": {
+    "fr": "Personnalisation des actions",
+    "en": "Personalizing actions",
+    "ar": "تخصيص الإجراءات"
+  },
+  "onboarding.plan.step_4": {
+    "fr": "Finalisation du programme",
+    "en": "Finalizing the program",
+    "ar": "الانتهاء من البرنامج"
+  },
+  "onboarding.plan.error": {
+    "fr": "Erreur lors de la génération du plan. Réessaie.",
+    "en": "Error generating plan. Please try again.",
+    "ar": "خطأ في إنشاء الخطة. حاول مرة أخرى."
+  },
+  "onboarding.plan.retry": {
+    "fr": "Réessayer",
+    "en": "Try again",
+    "ar": "حاول مرة أخرى"
+  },
+
+  "onboarding.plan_reveal.tag": {
+    "fr": "Ton plan",
+    "en": "Your plan",
+    "ar": "خطتك"
+  },
+  "onboarding.plan_reveal.title": {
+    "fr": "Ton parcours 30 jours est prêt",
+    "en": "Your 30-day journey is ready",
+    "ar": "مسيرتك لمدة 30 يوماً جاهزة"
+  },
+  "onboarding.plan_reveal.subtitle": {
+    "fr": "Voici un aperçu de tes premiers jours.",
+    "en": "Here's a preview of your first days.",
+    "ar": "إليك معاينة لأيامك الأولى."
+  },
+  "onboarding.plan_reveal.day_label": {
+    "fr": "Jour",
+    "en": "Day",
+    "ar": "اليوم"
+  },
+  "onboarding.plan_reveal.week_label": {
+    "fr": "Semaine",
+    "en": "Week",
+    "ar": "الأسبوع"
+  },
+  "onboarding.plan_reveal.week_teaser": {
+    "fr": "Détails révélés au fil des jours",
+    "en": "Details revealed day by day",
+    "ar": "التفاصيل تُكشف يوماً بيوم"
+  },
+  "onboarding.plan_reveal.cta": {
+    "fr": "Commencer le Jour 1",
+    "en": "Start Day 1",
+    "ar": "ابدأ اليوم الأول"
+  },
+
+  "today.tag": {
+    "fr": "Aujourd'hui",
+    "en": "Today",
+    "ar": "اليوم"
+  },
+  "today.day_of": {
+    "fr": "Jour {day} / 30",
+    "en": "Day {day} of 30",
+    "ar": "اليوم {day} من 30"
+  },
+  "today.streak": {
+    "fr": "{n} jour de suite",
+    "en": "{n} day streak",
+    "ar": "سلسلة {n} أيام"
+  },
+  "today.streak_start": {
+    "fr": "Commence ta série",
+    "en": "Start your streak",
+    "ar": "ابدأ سلسلتك"
+  },
+  "today.actions_title": {
+    "fr": "Actions du jour",
+    "en": "Today's actions",
+    "ar": "إجراءات اليوم"
+  },
+  "today.action.mark_done": {
+    "fr": "Marquer",
+    "en": "Mark done",
+    "ar": "تم"
+  },
+  "today.action.done": {
+    "fr": "Fait",
+    "en": "Done",
+    "ar": "منجز"
+  },
+  "today.all_done_title": {
+    "fr": "Toutes les actions sont terminées",
+    "en": "All actions complete",
+    "ar": "جميع الإجراءات مكتملة"
+  },
+  "today.all_done_sub": {
+    "fr": "Valide ta journée pour maintenir ta série.",
+    "en": "Complete your day to keep your streak going.",
+    "ar": "أكمل يومك للحفاظ على سلسلتك."
+  },
+  "today.complete_day_btn": {
+    "fr": "Valider la journée",
+    "en": "Complete day",
+    "ar": "إنهاء اليوم"
+  },
+  "today.recovery.title": {
+    "fr": "Journée de récupération",
+    "en": "Recovery day",
+    "ar": "يوم التعافي"
+  },
+  "today.recovery.sub": {
+    "fr": "Repose-toi aujourd'hui. La transformation se construit aussi pendant le repos.",
+    "en": "Rest today. Transformation also happens during recovery.",
+    "ar": "استرح اليوم. التحوّل يحدث أيضاً خلال فترة التعافي."
+  },
+  "today.pillar.hair": {
+    "fr": "Cheveux",
+    "en": "Hair",
+    "ar": "الشعر"
+  },
+  "today.pillar.style": {
+    "fr": "Style",
+    "en": "Style",
+    "ar": "الأسلوب"
+  },
+  "today.pillar.fitness": {
+    "fr": "Forme",
+    "en": "Fitness",
+    "ar": "اللياقة"
+  },
+  "today.pillar.skin": {
+    "fr": "Peau",
+    "en": "Skin",
+    "ar": "البشرة"
+  },
+  "today.pillar.recovery": {
+    "fr": "Récupération",
+    "en": "Recovery",
+    "ar": "التعافي"
+  },
+  "today.journey_complete.title": {
+    "fr": "30 jours accomplis",
+    "en": "30 days complete",
+    "ar": "30 يوماً مكتملة"
+  },
+  "today.journey_complete.sub": {
+    "fr": "Tu as terminé ton parcours RIZE. Regarde le chemin parcouru.",
+    "en": "You've finished your RIZE journey. Look how far you've come.",
+    "ar": "لقد أنهيت رحلتك مع RIZE. انظر كم قطعت من الطريق."
+  },
+  "today.placeholder.tag": {
+    "fr": "Aujourd'hui",
+    "en": "Today",
+    "ar": "اليوم"
+  },
+  "today.placeholder.day_of": {
+    "fr": "Jour {day} sur 30",
+    "en": "Day {day} of 30",
+    "ar": "اليوم {day} من 30"
+  },
+  "today.placeholder.coming_soon": {
+    "fr": "La Phase 3 construira cet écran avec tes actions quotidiennes.",
+    "en": "Phase 3 will build this screen with your daily actions.",
+    "ar": "ستبني المرحلة 3 هذه الشاشة بإجراءاتك اليومية."
   }
 }

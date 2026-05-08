@@ -1,0 +1,40 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('onboarding.goal.tag') }}{% endblock %}
+
+{% block nav_right %}{% endblock %}
+
+{% block content %}
+<section class="onboarding-section">
+    <div class="onboarding-container">
+
+        <div class="onboarding-step-tag">03 / 05</div>
+
+        <div class="onboarding-header">
+            <h2>{{ t('onboarding.goal.title') }}</h2>
+        </div>
+
+        {% if error %}
+        <div class="onboarding-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('onboarding_goal_post') }}" class="onboarding-form">
+
+            <div class="form-group">
+                <label for="biggest_goal">{{ t('onboarding.goal.prompt') }}</label>
+                <textarea
+                    id="biggest_goal"
+                    name="biggest_goal"
+                    rows="4"
+                    placeholder="{{ t('onboarding.goal.placeholder') }}"
+                    required
+                >{{ biggest_goal or '' }}</textarea>
+            </div>
+
+            <button type="submit" class="btn onboarding-submit">{{ t('onboarding.goal.submit') }}</button>
+
+        </form>
+
+    </div>
+</section>
+{% endblock %}

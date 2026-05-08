@@ -1,0 +1,68 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('onboarding.profile.tag') }}{% endblock %}
+
+{% block nav_right %}{% endblock %}
+
+{% block content %}
+<section class="onboarding-section">
+    <div class="onboarding-container">
+
+        <div class="onboarding-step-tag">02 / 05</div>
+
+        <div class="onboarding-header">
+            <h2>{{ t('onboarding.profile.title') }}</h2>
+            <p class="onboarding-sub">{{ t('onboarding.profile.subtitle') }}</p>
+        </div>
+
+        {% if error %}
+        <div class="onboarding-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('onboarding_profile_post') }}" class="onboarding-form">
+
+            <div class="form-group">
+                <label for="display_name">{{ t('onboarding.profile.name_label') }}</label>
+                <input
+                    type="text"
+                    id="display_name"
+                    name="display_name"
+                    placeholder="{{ t('onboarding.profile.name_placeholder') }}"
+                    value="{{ display_name or '' }}"
+                    autocomplete="given-name"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="city">{{ t('onboarding.profile.city_label') }}</label>
+                <select id="city" name="city">
+                    <option value="">—</option>
+                    {% for c in cities %}
+                    <option value="{{ c }}" {% if city == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                    <option value="other" {% if city == 'other' %}selected{% endif %}>{{ t('onboarding.profile.city_other') }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="age">{{ t('onboarding.profile.age_label') }}</label>
+                <input
+                    type="number"
+                    id="age"
+                    name="age"
+                    placeholder="{{ t('onboarding.profile.age_placeholder') }}"
+                    value="{{ age or '' }}"
+                    min="13"
+                    max="120"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="btn onboarding-submit">{{ t('onboarding.profile.submit') }}</button>
+
+        </form>
+
+    </div>
+</section>
+{% endblock %}

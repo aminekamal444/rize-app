@@ -1,0 +1,41 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('onboarding.insecurity.tag') }}{% endblock %}
+
+{% block nav_right %}{% endblock %}
+
+{% block content %}
+<section class="onboarding-section">
+    <div class="onboarding-container">
+
+        <div class="onboarding-step-tag">04 / 05</div>
+
+        <div class="onboarding-header">
+            <h2>{{ t('onboarding.insecurity.title') }}</h2>
+        </div>
+
+        {% if error %}
+        <div class="onboarding-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('onboarding_insecurity_post') }}" class="onboarding-form">
+
+            <div class="form-group">
+                <label for="biggest_insecurity">{{ t('onboarding.insecurity.prompt') }}</label>
+                <textarea
+                    id="biggest_insecurity"
+                    name="biggest_insecurity"
+                    rows="5"
+                    placeholder="{{ t('onboarding.insecurity.placeholder') }}"
+                    required
+                >{{ biggest_insecurity or '' }}</textarea>
+                <p class="form-hint">{{ t('onboarding.insecurity.prompt') }}</p>
+            </div>
+
+            <button type="submit" class="btn onboarding-submit">{{ t('onboarding.insecurity.submit') }}</button>
+
+        </form>
+
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('onboarding.plan_reveal.tag') }}{% endblock %}
+
+{% block nav_right %}{% endblock %}
+
+{% block content %}
+<section class="onboarding-section">
+    <div class="onboarding-container">
+
+        <div class="onboarding-step-tag">{{ t('onboarding.plan_reveal.tag') }}</div>
+
+        <div class="onboarding-header">
+            <h2>{{ t('onboarding.plan_reveal.title') }}</h2>
+            <p class="onboarding-sub">{{ t('onboarding.plan_reveal.subtitle') }}</p>
+        </div>
+
+        {# --- Preview: Days 1, 2, 3 --- #}
+        <div class="plan-preview">
+            {% for day in preview_days %}
+            <div class="plan-preview-day">
+                <div class="plan-preview-day-header">
+                    <span class="card-number">{{ t('onboarding.plan_reveal.day_label') }} {{ day.journey_day }}</span>
+                    <span class="plan-pillar-tag plan-pillar-tag--{{ day.focus_pillar }}">{{ day.focus_pillar }}</span>
+                </div>
+                <p class="plan-preview-summary">{{ day.summary }}</p>
+                {% if day.actions %}
+                <ul class="plan-preview-actions">
+                    {% for action in day.actions %}
+                    <li class="plan-preview-action">
+                        <span class="plan-preview-action-num">{{ '%02d' % action.position }}</span>
+                        <div>
+                            <strong>{{ action.title }}</strong>
+                            <p>{{ action.description }}</p>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        {# --- Week teasers --- #}
+        <div class="plan-teasers">
+            {% for week in [2, 3, 4] %}
+            <div class="plan-teaser">
+                <span class="card-number">{{ t('onboarding.plan_reveal.week_label') }} {{ week }}</span>
+                <p class="plan-teaser-hint">{{ t('onboarding.plan_reveal.week_teaser') }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {# --- CTA --- #}
+        <div class="reveal-cta">
+            <form method="POST" action="{{ url_for('onboarding_plan_reveal_post') }}">
+                <button type="submit" class="btn reveal-cta-btn">{{ t('onboarding.plan_reveal.cta') }}</button>
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

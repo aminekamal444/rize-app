@@ -1,0 +1,77 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('onboarding.photo.tag') }}{% endblock %}
+
+{% block nav_right %}{% endblock %}
+
+{% block content %}
+<section class="onboarding-section">
+    <div class="onboarding-container">
+
+        <div class="onboarding-step-tag">05 / 05</div>
+
+        <div class="onboarding-header">
+            <h2>{{ t('onboarding.photo.title') }}</h2>
+            <p class="onboarding-sub">{{ t('onboarding.photo.subtitle') }}</p>
+        </div>
+
+        {% if error %}
+        <div class="onboarding-error">{{ error }}</div>
+        {% endif %}
+
+        {# --- Visual guide --- #}
+        <div class="photo-guide">
+            <div class="photo-guide-figure">
+                <svg viewBox="0 0 120 180" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    {# Outline silhouette — head + shoulders + upper body #}
+                    <ellipse cx="60" cy="36" rx="26" ry="30" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 3"/>
+                    <path d="M18 120 C18 90 35 72 60 68 C85 72 102 90 102 120" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 3" fill="none"/>
+                    <line x1="60" y1="66" x2="60" y2="110" stroke="var(--border-gold)" stroke-width="1"/>
+                    {# Center crosshair #}
+                    <circle cx="60" cy="36" r="3" fill="var(--gold)" opacity="0.4"/>
+                </svg>
+            </div>
+            <ul class="photo-guide-list">
+                <li><span class="card-number">01</span> {{ t('onboarding.photo.guide_1') }}</li>
+                <li><span class="card-number">02</span> {{ t('onboarding.photo.guide_2') }}</li>
+                <li><span class="card-number">03</span> {{ t('onboarding.photo.guide_3') }}</li>
+                <li><span class="card-number">04</span> {{ t('onboarding.photo.guide_4') }}</li>
+            </ul>
+        </div>
+
+        <form method="POST" action="{{ url_for('onboarding_photo_post') }}"
+              enctype="multipart/form-data" class="onboarding-form">
+
+            <div class="form-group">
+                <label class="upload-area" for="photo" id="upload-label">
+                    <span class="upload-icon" aria-hidden="true">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </span>
+                    <span id="upload-filename" class="upload-filename">{{ t('onboarding.photo.upload_label') }}</span>
+                    <span class="upload-hint">{{ t('onboarding.photo.upload_hint') }}</span>
+                    <input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/*" required>
+                </label>
+            </div>
+
+            <button type="submit" class="btn onboarding-submit">{{ t('onboarding.photo.submit') }}</button>
+
+        </form>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('photo').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        if (file) {
+            document.getElementById('upload-filename').textContent = file.name;
+        }
+    });
+</script>
+{% endblock %}

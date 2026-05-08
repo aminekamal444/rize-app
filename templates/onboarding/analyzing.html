@@ -1,0 +1,86 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('onboarding.analyzing.title') }}{% endblock %}
+
+{% block nav_right %}{% endblock %}
+
+{% block content %}
+<section class="onboarding-section">
+    <div class="onboarding-container onboarding-container--narrow">
+
+        {% if error %}
+        <div class="onboarding-header">
+            <h2>{{ t('onboarding.analyzing.title') }}</h2>
+        </div>
+        <div class="onboarding-error">{{ error }}</div>
+        <div style="text-align:center;margin-top:32px;">
+            <a href="{{ url_for('onboarding_photo') }}" class="btn-outline">{{ t('onboarding.analyzing.retry') }}</a>
+        </div>
+
+        {% else %}
+
+        {# Loading state — auto-POSTs after 2s #}
+        <div class="analyzing-screen">
+
+            {% if photo_url %}
+            <div class="analyzing-photo">
+                <img src="{{ photo_url }}" alt="Your baseline photo" class="analyzing-photo-img">
+                <div class="analyzing-photo-overlay"></div>
+            </div>
+            {% endif %}
+
+            <div class="onboarding-step-tag" style="margin-top:32px;">{{ t('onboarding.analyzing.title') }}</div>
+
+            <p class="onboarding-sub" style="margin-top:16px;">{{ t('onboarding.analyzing.subtitle') }}</p>
+
+            <div class="analyzing-steps">
+                <div class="analyzing-step analyzing-step--active">
+                    <span class="analyzing-step-dot"></span>
+                    <span>{{ t('onboarding.analyzing.step_1') }}</span>
+                </div>
+                <div class="analyzing-step">
+                    <span class="analyzing-step-dot"></span>
+                    <span>{{ t('onboarding.analyzing.step_2') }}</span>
+                </div>
+                <div class="analyzing-step">
+                    <span class="analyzing-step-dot"></span>
+                    <span>{{ t('onboarding.analyzing.step_3') }}</span>
+                </div>
+                <div class="analyzing-step">
+                    <span class="analyzing-step-dot"></span>
+                    <span>{{ t('onboarding.analyzing.step_4') }}</span>
+                </div>
+            </div>
+
+            {# Hidden form that auto-submits to trigger the AI call #}
+            <form id="analyze-form" method="POST" action="{{ url_for('onboarding_analyzing_post') }}">
+            </form>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{% if not error %}
+<script>
+    // Cycle through the analyzing step indicators
+    var steps = document.querySelectorAll('.analyzing-step');
+    var current = 0;
+    var interval = setInterval(function() {
+        if (steps[current]) steps[current].classList.remove('analyzing-step--active');
+        current = (current + 1) % steps.length;
+        if (steps[current]) steps[current].classList.add('analyzing-step--active');
+    }, 700);
+
+    // Auto-submit after a short delay to let the loading screen render
+    setTimeout(function() {
+        clearInterval(interval);
+        document.getElementById('analyze-form').submit();
+    }, 2000);
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('today.tag') }}{% endblock %}
+
+{% block content %}
+<section class="today-section">
+    <div class="today-container">
+
+        {# ── Header row: day + streak ─────────────────────────────────── #}
+        <div class="today-topbar">
+            <span class="today-day-tag">
+                {{ t('today.day_of').replace('{day}', (profile.journey_day or 1)|string) }}
+            </span>
+
+            <div class="today-streak-block">
+                {% set streak = profile.streak_current or 0 %}
+                {% if streak > 0 %}
+                    <span class="today-streak-num">{{ streak }}</span>
+                    <span class="today-streak-label">
+                        {{ t('today.streak').replace('{n}', streak|string) }}
+                    </span>
+                {% else %}
+                    <span class="today-streak-label today-streak-label--dim">
+                        {{ t('today.streak_start') }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        {# ── Profile identity ─────────────────────────────────────────── #}
+        {% if profile.display_name or profile.archetype %}
+        <div class="today-identity">
+            {% if profile.display_name %}
+            <p class="today-identity-name">{{ profile.display_name }}</p>
+            {% endif %}
+            {% if profile.archetype %}
+            <p class="today-identity-archetype">{{ profile.archetype }}</p>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {# ── Journey complete state ───────────────────────────────────── #}
+        {% if journey_complete and (profile.journey_day or 0) >= 30 %}
+        <div class="today-journey-complete">
+            <div class="today-complete-num">30</div>
+            <h2 class="today-complete-title">{{ t('today.journey_complete.title') }}</h2>
+            <p class="today-complete-sub">{{ t('today.journey_complete.sub') }}</p>
+        </div>
+
+        {# ── Normal day ───────────────────────────────────────────────── #}
+        {% else %}
+
+            {# Focus pillar + summary #}
+            {% if plan %}
+            <div class="today-plan-header">
+                <span class="plan-pillar-tag {% if plan.focus_pillar == 'recovery' %}plan-pillar-tag--recovery{% endif %}">
+                    {{ t('today.pillar.' ~ (plan.focus_pillar or 'recovery')) }}
+                </span>
+                {% if plan.summary %}
+                <p class="today-plan-summary">{{ plan.summary }}</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {# ── Recovery day ────────────────────────────────────────── #}
+            {% if is_recovery and not actions %}
+            <div class="today-recovery">
+                <div class="today-recovery-icon">—</div>
+                <h3 class="today-recovery-title">{{ t('today.recovery.title') }}</h3>
+                <p class="today-recovery-sub">{{ t('today.recovery.sub') }}</p>
+            </div>
+
+            {# ── Actions list ────────────────────────────────────────── #}
+            {% else %}
+            <div class="today-actions-block">
+                <p class="today-actions-label">{{ t('today.actions_title') }}</p>
+
+                <ul class="today-actions-list">
+                    {% for action in actions %}
+                    <li class="action-card {% if action.completed %}action-card--done{% endif %}">
+                        <div class="action-card-left">
+                            <span class="action-card-num">{{ '%02d'|format(action.position) }}</span>
+                        </div>
+
+                        <div class="action-card-body">
+                            <div class="action-card-meta">
+                                <span class="action-card-pillar">
+                                    {{ t('today.pillar.' ~ action.pillar) }}
+                                </span>
+                            </div>
+                            <p class="action-card-title">{{ action.title }}</p>
+                            {% if action.description %}
+                            <p class="action-card-desc">{{ action.description }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="action-card-right">
+                            {% if action.completed %}
+                            <span class="action-done-badge">{{ t('today.action.done') }}</span>
+                            {% else %}
+                            <form method="POST"
+                                  action="{{ url_for('today_action_done', action_id=action.id) }}">
+                                <button type="submit" class="action-mark-btn">
+                                    {{ t('today.action.mark_done') }}
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {# ── Complete day CTA ────────────────────────────────────── #}
+            {% if all_done %}
+            <div class="today-cta-block">
+                <p class="today-cta-label">{{ t('today.all_done_title') }}</p>
+                <p class="today-cta-sub">{{ t('today.all_done_sub') }}</p>
+                <form method="POST" action="{{ url_for('today_complete') }}">
+                    <button type="submit" class="btn today-complete-btn">
+                        {{ t('today.complete_day_btn') }}
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

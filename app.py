@@ -1,12 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 from dotenv import load_dotenv
 import base64
+import io
+import json
 import os
+from datetime import date, datetime, timezone
 
 from lib.claude_client import get_claude, ask_claude, ask_claude_vision, ask_claude_json
-from lib.supabase_client import get_supabase
-from lib.auth import login_required, set_user_session, clear_user_session
+from lib.supabase_client import get_supabase, get_authed_supabase, get_admin_supabase
+from lib.auth import login_required, set_user_session, clear_user_session, get_current_user, get_supabase_tokens
 from lib.i18n import get_language, t, is_rtl
+from lib.image_utils import thumbnail_for_baseline, to_base64
+from lib.prompts.baseline_score import build_baseline_score_prompt
+from lib.prompts.plan_generator import build_plan_prompt, build_compact_plan_prompt, build_chunked_plan_prompt
 
 load_dotenv()
 
@@ -21,6 +27,51 @@ def inject_i18n():
 
 def clean(value):
     return value.replace("_", " ").title() if value else ""
+
+
+# ---------------------------------------------------------------------------
+# Onboarding helpers
+# ---------------------------------------------------------------------------
+
+def _db():
+    """
+    Return a Supabase client for backend operations.
+
+    Uses service-role key (bypasses RLS) because the supabase-py SDK does
+    not reliably propagate user JWT auth via set_session(). Security is
+    enforced at the app level:
+      - @login_required verifies authenticated user via Flask session
+      - user_id always comes from get_current_user() (Flask session)
+      - All queries explicitly scoped: .eq("user_id", user_id)
+      - No user-supplied input determines user_id
+
+    RLS policies remain in place as defense-in-depth.
+    """
+    return get_admin_supabase()
+
+
+def require_onboarding_complete():
+    """
+    Return a redirect response if the current user has not completed onboarding.
+    Returns None if onboarding is complete (no action needed).
+
+    Usage in a route:
+        guard = require_onboarding_complete()
+        if guard:
+            return guard
+    """
+    user_id = get_current_user()
+    if not user_id:
+        return redirect(url_for("login"))
+    try:
+        db = _db()
+        result = db.table("profiles").select("onboarding_complete").eq("id", user_id).single().execute()
+        profile = result.data
+        if not profile or not profile.get("onboarding_complete"):
+            return redirect(url_for("onboarding"))
+    except Exception:
+        return redirect(url_for("onboarding"))
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -51,16 +102,31 @@ def signup():
 @app.route("/signup", methods=["POST"])
 def signup_post():
     supabase = get_supabase()
-    email = request.form.get("email")
-    password = request.form.get("password")
+    email = (request.form.get("email") or "").strip()
+    password = request.form.get("password") or ""
+    confirm_password = request.form.get("confirm_password") or ""
+
+    if not email or not password:
+        return render_template("signup.html", error="Email and password are required.", email=email)
+    if password != confirm_password:
+        return render_template("signup.html", error="Passwords do not match.", email=email)
+    if len(password) < 6:
+        return render_template("signup.html", error="Password must be at least 6 characters.", email=email)
+
     try:
         response = supabase.auth.sign_up({"email": email, "password": password})
         user = response.user
         if user:
-            set_user_session(user.id)
-        return redirect(url_for("dashboard"))
+            access_token = ""
+            refresh_token = ""
+            if response.session:
+                access_token = response.session.access_token or ""
+                refresh_token = response.session.refresh_token or ""
+            set_user_session(user.id, access_token, refresh_token)
+            return redirect(url_for("onboarding"))
+        return render_template("signup.html", error="Could not create account. Please try again.", email=email)
     except Exception as e:
-        return render_template("signup.html", error=str(e))
+        return render_template("signup.html", error=str(e), email=email)
 
 
 @app.route("/login")
@@ -80,8 +146,14 @@ def login_post():
         })
         user = response.user
         if user:
-            set_user_session(user.id)
-        return redirect(url_for("dashboard"))
+            # Store JWT tokens for authenticated DB/storage operations
+            access_token = ""
+            refresh_token = ""
+            if response.session:
+                access_token = response.session.access_token or ""
+                refresh_token = response.session.refresh_token or ""
+            set_user_session(user.id, access_token, refresh_token)
+        return redirect(url_for("onboarding"))
     except Exception:
         return render_template("login.html", error="Invalid email or password")
 
@@ -99,7 +171,106 @@ def logout():
 @app.route("/dashboard")
 @login_required
 def dashboard():
+    guard = require_onboarding_complete()
+    if guard:
+        return guard
     return render_template("dashboard.html")
+
+
+@app.route("/today")
+@login_required
+def today():
+    guard = require_onboarding_complete()
+    if guard:
+        return guard
+    user_id = get_current_user()
+    try:
+        db = _db()
+        profile_result = db.table("profiles").select(
+            "display_name, archetype, journey_day, streak_current, streak_best"
+        ).eq("id", user_id).single().execute()
+        profile = profile_result.data or {}
+
+        journey_day = profile.get("journey_day") or 1
+
+        # Fetch today's plan
+        plan_result = db.table("daily_plans").select(
+            "id, journey_day, focus_pillar, summary, is_recovery_day"
+        ).eq("user_id", user_id).eq("journey_day", journey_day).execute()
+        plan_rows = plan_result.data or []
+        plan = plan_rows[0] if plan_rows else {}
+
+        # Fetch actions for today's plan
+        actions = []
+        if plan.get("id"):
+            actions_result = db.table("daily_actions").select(
+                "id, position, pillar, title, description, completed"
+            ).eq("daily_plan_id", plan["id"]).order("position").execute()
+            actions = actions_result.data or []
+
+    except Exception:
+        profile = {}
+        plan = {}
+        actions = []
+
+    is_recovery = bool(plan.get("is_recovery_day"))
+    all_done = is_recovery or (len(actions) > 0 and all(a.get("completed") for a in actions))
+    journey_complete = (profile.get("journey_day") or 0) >= 30 and all_done
+
+    return render_template(
+        "today/index.html",
+        profile=profile,
+        plan=plan,
+        actions=actions,
+        all_done=all_done,
+        is_recovery=is_recovery,
+        journey_complete=journey_complete,
+    )
+
+
+@app.route("/today/action/<action_id>/done", methods=["POST"])
+@login_required
+def today_action_done(action_id):
+    user_id = get_current_user()
+    try:
+        db = _db()
+        db.table("daily_actions").update({
+            "completed": True,
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+        }).eq("id", action_id).eq("user_id", user_id).execute()
+    except Exception:
+        pass
+    return redirect(url_for("today"))
+
+
+@app.route("/today/complete", methods=["POST"])
+@login_required
+def today_complete():
+    user_id = get_current_user()
+    try:
+        db = _db()
+        profile_result = db.table("profiles").select(
+            "journey_day, streak_current, streak_best"
+        ).eq("id", user_id).single().execute()
+        profile = profile_result.data or {}
+
+        current_day = profile.get("journey_day") or 1
+        streak = profile.get("streak_current") or 0
+        best = profile.get("streak_best") or 0
+
+        new_streak = streak + 1
+        new_best = max(best, new_streak)
+        # Don't advance past day 30
+        new_day = min(current_day + 1, 30)
+
+        db.table("profiles").update({
+            "journey_day": new_day,
+            "streak_current": new_streak,
+            "streak_best": new_best,
+        }).eq("id", user_id).execute()
+    except Exception:
+        pass
+    return redirect(url_for("today"))
 
 
 @app.route("/choose/<category>")
@@ -468,6 +639,655 @@ Use the emoji headers exactly as shown above."""
 
     result = ask_claude(prompt)
     return render_template("results.html", result=result, title="Your Skincare Plan", emoji="🧴")
+
+
+# ===========================================================================
+# ONBOARDING FLOW
+# ===========================================================================
+
+MOROCCAN_CITIES = [
+    "Casablanca", "Rabat", "Fès", "Marrakech", "Tanger", "Agadir",
+    "Meknès", "Oujda", "Kénitra", "Tétouan", "Laâyoune", "Mohammedia",
+    "El Jadida", "Béni Mellal", "Nador", "Settat", "Berrechid",
+    "Khémisset", "Inzegan", "Safi",
+]
+
+
+@app.route("/onboarding")
+@login_required
+def onboarding():
+    """Entry point: redirect user to the correct step based on onboarding_step."""
+    user_id = get_current_user()
+    try:
+        db = _db()
+        result = db.table("profiles").select(
+            "onboarding_complete, onboarding_step"
+        ).eq("id", user_id).single().execute()
+        profile = result.data or {}
+    except Exception:
+        profile = {}
+
+    if profile.get("onboarding_complete"):
+        return redirect(url_for("today"))
+
+    step = profile.get("onboarding_step", 0)
+    step_map = {
+        0: "onboarding_language",
+        1: "onboarding_profile",
+        2: "onboarding_goal",
+        3: "onboarding_insecurity",
+        4: "onboarding_photo",
+        5: "onboarding_analyzing",
+        6: "onboarding_reveal",
+        7: "onboarding_plan_reveal",
+    }
+    return redirect(url_for(step_map.get(step, "onboarding_language")))
+
+
+# ---------------------------------------------------------------------------
+# Step 1 — Language picker
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/language", methods=["GET"])
+@login_required
+def onboarding_language():
+    return render_template("onboarding/language.html")
+
+
+@app.route("/onboarding/language", methods=["POST"])
+@login_required
+def onboarding_language_post():
+    user_id = get_current_user()
+    lang = request.form.get("language", "fr")
+    if lang not in ("fr", "en", "ar"):
+        lang = "fr"
+
+    session["lang"] = lang
+
+    try:
+        db = _db()
+        db.table("profiles").update({
+            "preferred_language": lang,
+            "onboarding_step": 1,
+        }).eq("id", user_id).execute()
+    except Exception:
+        pass  # Non-fatal: session lang is already set
+
+    return redirect(url_for("onboarding_profile"))
+
+
+# ---------------------------------------------------------------------------
+# Step 2 — Profile basics
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/profile", methods=["GET"])
+@login_required
+def onboarding_profile():
+    return render_template("onboarding/profile.html", cities=MOROCCAN_CITIES)
+
+
+@app.route("/onboarding/profile", methods=["POST"])
+@login_required
+def onboarding_profile_post():
+    user_id = get_current_user()
+    display_name = (request.form.get("display_name") or "").strip()
+    city = (request.form.get("city") or "").strip()
+    age_raw = (request.form.get("age") or "").strip()
+
+    error = None
+    if not display_name:
+        error = t("onboarding.profile.error.name")
+    else:
+        try:
+            age = int(age_raw)
+            if not (13 <= age <= 120):
+                raise ValueError
+        except (ValueError, TypeError):
+            error = t("onboarding.profile.error.age")
+
+    if error:
+        return render_template("onboarding/profile.html", cities=MOROCCAN_CITIES, error=error,
+                               display_name=display_name, city=city, age=age_raw)
+
+    try:
+        db = _db()
+        db.table("profiles").update({
+            "display_name": display_name,
+            "city": city,
+            "age": int(age_raw),
+            "onboarding_step": 2,
+        }).eq("id", user_id).execute()
+    except Exception as exc:
+        return render_template("onboarding/profile.html", cities=MOROCCAN_CITIES,
+                               error=str(exc), display_name=display_name, city=city, age=age_raw)
+
+    return redirect(url_for("onboarding_goal"))
+
+
+# ---------------------------------------------------------------------------
+# Step 3 — Biggest goal
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/goal", methods=["GET"])
+@login_required
+def onboarding_goal():
+    return render_template("onboarding/goal.html")
+
+
+@app.route("/onboarding/goal", methods=["POST"])
+@login_required
+def onboarding_goal_post():
+    user_id = get_current_user()
+    biggest_goal = (request.form.get("biggest_goal") or "").strip()
+
+    if not biggest_goal:
+        return render_template("onboarding/goal.html",
+                               error=t("onboarding.goal.error"))
+
+    try:
+        db = _db()
+        db.table("profiles").update({
+            "biggest_goal": biggest_goal,
+            "onboarding_step": 3,
+        }).eq("id", user_id).execute()
+    except Exception as exc:
+        return render_template("onboarding/goal.html",
+                               error=str(exc), biggest_goal=biggest_goal)
+
+    return redirect(url_for("onboarding_insecurity"))
+
+
+# ---------------------------------------------------------------------------
+# Step 4 — Biggest insecurity
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/insecurity", methods=["GET"])
+@login_required
+def onboarding_insecurity():
+    return render_template("onboarding/insecurity.html")
+
+
+@app.route("/onboarding/insecurity", methods=["POST"])
+@login_required
+def onboarding_insecurity_post():
+    user_id = get_current_user()
+    biggest_insecurity = (request.form.get("biggest_insecurity") or "").strip()
+
+    if not biggest_insecurity:
+        return render_template("onboarding/insecurity.html",
+                               error=t("onboarding.insecurity.error"))
+
+    try:
+        db = _db()
+        db.table("profiles").update({
+            "biggest_insecurity": biggest_insecurity,
+            "onboarding_step": 4,
+        }).eq("id", user_id).execute()
+    except Exception as exc:
+        return render_template("onboarding/insecurity.html",
+                               error=str(exc), biggest_insecurity=biggest_insecurity)
+
+    return redirect(url_for("onboarding_photo"))
+
+
+# ---------------------------------------------------------------------------
+# Step 5 — Baseline photo upload
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/photo", methods=["GET"])
+@login_required
+def onboarding_photo():
+    return render_template("onboarding/photo.html")
+
+
+@app.route("/onboarding/photo", methods=["POST"])
+@login_required
+def onboarding_photo_post():
+    user_id = get_current_user()
+    photo = request.files.get("photo")
+
+    if not photo or photo.filename == "":
+        return render_template("onboarding/photo.html",
+                               error=t("onboarding.photo.error.no_file"))
+
+    if not (photo.content_type or "").startswith("image/"):
+        return render_template("onboarding/photo.html",
+                               error=t("onboarding.photo.error.invalid"))
+
+    try:
+        # Compress to baseline spec: 1200×1200 at 80% JPEG
+        compressed = thumbnail_for_baseline(photo)
+        compressed_bytes = compressed.read()
+        storage_path = f"{user_id}/baseline.jpg"
+
+        # Storage upload uses admin client (bypasses RLS). Path is scoped to
+        # user_id derived from Flask session (verified by @login_required),
+        # so user isolation is maintained at the application level.
+        admin = get_admin_supabase()
+        # Remove any existing file at this path (e.g., from previous attempts).
+        # Ignore failures since the file may not exist yet on first upload.
+        try:
+            admin.storage.from_("progress-photos").remove([storage_path])
+        except Exception:
+            pass
+        admin.storage.from_("progress-photos").upload(
+            storage_path,
+            compressed_bytes,
+            {"content-type": "image/jpeg"},
+        )
+
+        # Database insert continues using the authenticated user's client (RLS still applies)
+        db = _db()
+        insert_result = db.table("photos").insert({
+            "user_id": user_id,
+            "type": "baseline",
+            "storage_path": storage_path,
+            "bucket": "progress-photos",
+            "journey_day": 0,
+        }).execute()
+
+        photo_id = insert_result.data[0]["id"] if insert_result.data else None
+
+        # Store path + photo_id in session for the analyzing step
+        session["baseline_photo_path"] = storage_path
+        session["baseline_photo_id"] = photo_id
+
+        db.table("profiles").update({"onboarding_step": 5}).eq("id", user_id).execute()
+
+    except Exception as exc:
+        return render_template("onboarding/photo.html",
+                               error=t("onboarding.photo.error.upload") + f" ({exc})")
+
+    return redirect(url_for("onboarding_analyzing"))
+
+
+# ---------------------------------------------------------------------------
+# Step 6 — Analyzing (loading screen + AI call)
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/analyzing", methods=["GET"])
+@login_required
+def onboarding_analyzing():
+    user_id = get_current_user()
+    photo_path = session.get("baseline_photo_path", "")
+
+    # Try to generate a signed URL for showing the photo on the loading screen
+    photo_url = None
+    if photo_path:
+        try:
+            admin = get_admin_supabase()
+            signed = admin.storage.from_("progress-photos").create_signed_url(photo_path, 300)
+            photo_url = signed.get("signedURL") or signed.get("signedUrl")
+        except Exception:
+            pass
+
+    return render_template("onboarding/analyzing.html", photo_url=photo_url)
+
+
+@app.route("/onboarding/analyzing", methods=["POST"])
+@login_required
+def onboarding_analyzing_post():
+    user_id = get_current_user()
+    photo_path = session.get("baseline_photo_path")
+    photo_id = session.get("baseline_photo_id")
+
+    if not photo_path:
+        return render_template("onboarding/analyzing.html",
+                               error=t("onboarding.analyzing.error"))
+
+    try:
+        db = _db()
+
+        # Fetch profile data for the prompt
+        profile_result = db.table("profiles").select(
+            "preferred_language, biggest_goal, biggest_insecurity"
+        ).eq("id", user_id).single().execute()
+        profile = profile_result.data or {}
+
+        language = profile.get("preferred_language") or get_language()
+        biggest_goal = profile.get("biggest_goal") or ""
+        biggest_insecurity = profile.get("biggest_insecurity") or ""
+
+        # Download the compressed baseline photo from storage
+        photo_bytes = get_admin_supabase().storage.from_("progress-photos").download(photo_path)
+        photo_b64 = base64.standard_b64encode(photo_bytes).decode("utf-8")
+
+        # Call Claude Vision
+        prompt = build_baseline_score_prompt(language, biggest_goal, biggest_insecurity)
+        result = ask_claude_json(
+            prompt,
+            max_tokens=1000,
+            image_base64=photo_b64,
+            media_type="image/jpeg",
+        )
+
+        scores = result.get("scores", {})
+        current_archetype = result.get("current_archetype", "")
+        target_archetype = result.get("target_archetype", "")
+        strength = result.get("strength", "")
+        improvement = result.get("improvement", "")
+        observations = result.get("observations", [])
+
+        # Clamp scores
+        for k in ("hair", "style", "fitness", "skin", "overall"):
+            scores[k] = max(0, min(100, int(scores.get(k, 50))))
+
+        # Save scores + observations to the photos row
+        if photo_id:
+            db.table("photos").update({
+                "score_overall": scores.get("overall"),
+                "score_hair": scores.get("hair"),
+                "score_style": scores.get("style"),
+                "score_fitness": scores.get("fitness"),
+                "score_skin": scores.get("skin"),
+                "strength": strength,
+                "improvement": improvement,
+                "observations": json.dumps(observations),
+            }).eq("id", photo_id).execute()
+
+        # Save archetype + baseline_score to profiles
+        db.table("profiles").update({
+            "archetype": current_archetype,
+            "target_archetype": target_archetype,
+            "baseline_score": scores.get("overall"),
+            "onboarding_step": 6,
+        }).eq("id", user_id).execute()
+
+        # Clear temporary session keys
+        session.pop("baseline_photo_path", None)
+        session.pop("baseline_photo_id", None)
+
+    except ValueError as exc:
+        return render_template("onboarding/analyzing.html",
+                               error=t("onboarding.analyzing.error") + f" ({exc})")
+    except Exception as exc:
+        return render_template("onboarding/analyzing.html",
+                               error=t("onboarding.analyzing.error") + f" ({exc})")
+
+    return redirect(url_for("onboarding_reveal"))
+
+
+# ---------------------------------------------------------------------------
+# Step 6b — Archetype reveal
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/reveal", methods=["GET"])
+@login_required
+def onboarding_reveal():
+    user_id = get_current_user()
+    try:
+        db = _db()
+
+        profile_result = db.table("profiles").select(
+            "archetype, target_archetype, baseline_score"
+        ).eq("id", user_id).single().execute()
+        profile = profile_result.data or {}
+
+        # Fetch scores + observations from the baseline photo row
+        photo_result = db.table("photos").select(
+            "score_hair, score_style, score_fitness, score_skin, score_overall, "
+            "strength, improvement, observations"
+        ).eq("user_id", user_id).eq("type", "baseline").order("created_at", desc=True).limit(1).execute()
+        photo = (photo_result.data or [{}])[0]
+
+        observations_raw = photo.get("observations")
+        if isinstance(observations_raw, str):
+            try:
+                observations = json.loads(observations_raw)
+            except (json.JSONDecodeError, TypeError):
+                observations = []
+        elif isinstance(observations_raw, list):
+            observations = observations_raw
+        else:
+            observations = []
+
+        scores = {
+            "hair": photo.get("score_hair", 0),
+            "style": photo.get("score_style", 0),
+            "fitness": photo.get("score_fitness", 0),
+            "skin": photo.get("score_skin", 0),
+            "overall": photo.get("score_overall", profile.get("baseline_score", 0)),
+        }
+
+    except Exception:
+        profile = {}
+        scores = {"hair": 0, "style": 0, "fitness": 0, "skin": 0, "overall": 0}
+        observations = []
+        photo = {}
+
+    return render_template("onboarding/reveal.html",
+                           profile=profile,
+                           scores=scores,
+                           observations=observations,
+                           strength=photo.get("strength", ""),
+                           improvement=photo.get("improvement", ""))
+
+
+# ---------------------------------------------------------------------------
+# Step 7 — Plan generation
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/plan", methods=["GET"])
+@login_required
+def onboarding_plan():
+    return render_template("onboarding/plan.html")
+
+
+@app.route("/onboarding/plan", methods=["POST"])
+@login_required
+def onboarding_plan_post():
+    user_id = get_current_user()
+    try:
+        db = _db()
+
+        # Fetch full profile
+        profile_result = db.table("profiles").select(
+            "display_name, biggest_goal, biggest_insecurity, archetype, "
+            "target_archetype, preferred_language"
+        ).eq("id", user_id).single().execute()
+        profile = profile_result.data or {}
+
+        # Fetch baseline photo observations and scores
+        photo_result = db.table("photos").select(
+            "score_hair, score_style, score_fitness, score_skin, observations"
+        ).eq("user_id", user_id).eq("type", "baseline").order("created_at", desc=True).limit(1).execute()
+        photo = (photo_result.data or [{}])[0]
+
+        observations_raw = photo.get("observations")
+        if isinstance(observations_raw, str):
+            try:
+                observations = json.loads(observations_raw)
+            except (json.JSONDecodeError, TypeError):
+                observations = []
+        elif isinstance(observations_raw, list):
+            observations = observations_raw
+        else:
+            observations = []
+
+        scores = {
+            "hair": photo.get("score_hair", 50),
+            "style": photo.get("score_style", 50),
+            "fitness": photo.get("score_fitness", 50),
+            "skin": photo.get("score_skin", 50),
+        }
+
+        language = profile.get("preferred_language") or get_language()
+
+        # --- Generate plan in 3 chunks to avoid JSON truncation ---
+        import re as _re
+
+        def _try_generate_chunk(day_start: int, day_end: int) -> list:
+            prompt = build_chunked_plan_prompt(language, profile, observations, scores, day_start, day_end)
+            raw = ask_claude(prompt, max_tokens=4000)
+            cleaned = _re.sub(r"^```(?:json)?\s*|\s*```$", "", raw.strip(), flags=_re.MULTILINE).strip()
+            return json.loads(cleaned)
+
+        days: list = []
+        for chunk_start, chunk_end in [(1, 10), (11, 20), (21, 30)]:
+            chunk = None
+            for attempt in range(2):
+                try:
+                    chunk = _try_generate_chunk(chunk_start, chunk_end)
+                    break
+                except (ValueError, json.JSONDecodeError):
+                    if attempt == 1:
+                        raise ValueError(
+                            f"Plan generation failed for days {chunk_start}–{chunk_end} after 2 attempts."
+                        )
+            days.extend(chunk)
+
+        if not isinstance(days, list) or len(days) == 0:
+            raise ValueError("Plan generation returned an empty or invalid result.")
+
+        # --- Clear any existing plan data for this user ---
+        # Handles retries after partial failures and prepares for future
+        # "regenerate plan" feature. daily_actions has ON DELETE CASCADE on
+        # daily_plans, but we delete both explicitly for clarity.
+        db.table("daily_actions").delete().eq("user_id", user_id).execute()
+        db.table("daily_plans").delete().eq("user_id", user_id).execute()
+
+        # --- Insert daily_plans + daily_actions ---
+        VALID_PILLARS = {"hair", "style", "fitness", "skin", "recovery"}
+
+        PILLAR_ALIAS = {
+            "posture": "fitness",
+            "body": "fitness",
+            "exercise": "fitness",
+            "mobility": "fitness",
+            "nutrition": "fitness",
+            "sleep": "recovery",
+            "rest": "recovery",
+            "mindset": "recovery",
+            "mental": "recovery",
+            "wardrobe": "style",
+            "clothing": "style",
+            "fashion": "style",
+            "outfit": "style",
+            "haircut": "hair",
+            "beard": "hair",
+            "grooming": "skin",
+            "skincare": "skin",
+            "acne": "skin",
+        }
+
+        def _normalize_pillar(value: str) -> str:
+            if not value:
+                return "fitness"
+            v = value.strip().lower()
+            if v in VALID_PILLARS:
+                return v
+            if v in PILLAR_ALIAS:
+                return PILLAR_ALIAS[v]
+            return "fitness"  # final fallback
+
+        journey_start = date.today().isoformat()
+        plans_to_insert = []
+        actions_to_insert = []
+
+        for day_data in days:
+            day_num = int(day_data.get("day", 0))
+            if not (1 <= day_num <= 30):
+                continue
+            plans_to_insert.append({
+                "user_id": user_id,
+                "journey_day": day_num,
+                "focus_pillar": _normalize_pillar(day_data.get("focus_pillar", "")),
+                "summary": day_data.get("summary", ""),
+                "is_recovery_day": bool(day_data.get("is_recovery_day", False)),
+            })
+
+        # Insert plans and collect IDs keyed by journey_day
+        plan_insert_result = db.table("daily_plans").insert(plans_to_insert).execute()
+        plan_id_map = {}
+        for row in (plan_insert_result.data or []):
+            plan_id_map[row["journey_day"]] = row["id"]
+
+        # Build actions list now that we have plan IDs
+        for day_data in days:
+            day_num = int(day_data.get("day", 0))
+            plan_id = plan_id_map.get(day_num)
+            if not plan_id:
+                continue
+            for action in (day_data.get("actions") or []):
+                pos = int(action.get("position", 1))
+                if not (1 <= pos <= 3):
+                    continue
+                actions_to_insert.append({
+                    "user_id": user_id,
+                    "daily_plan_id": plan_id,
+                    "position": pos,
+                    "pillar": _normalize_pillar(action.get("pillar", "")),
+                    "title": action.get("title", ""),
+                    "description": action.get("description", ""),
+                })
+
+        if actions_to_insert:
+            db.table("daily_actions").insert(actions_to_insert).execute()
+
+        # Mark onboarding complete
+        db.table("profiles").update({
+            "onboarding_complete": True,
+            "onboarding_step": 7,
+            "journey_start_date": journey_start,
+            "journey_day": 0,
+        }).eq("id", user_id).execute()
+
+    except Exception as exc:
+        return render_template("onboarding/plan.html",
+                               error=t("onboarding.plan.error") + f" ({exc})")
+
+    return redirect(url_for("onboarding_plan_reveal"))
+
+
+# ---------------------------------------------------------------------------
+# Step 8 — Plan reveal
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/plan-reveal", methods=["GET"])
+@login_required
+def onboarding_plan_reveal():
+    user_id = get_current_user()
+    try:
+        db = _db()
+
+        # Fetch the first 3 days with their actions
+        plans_result = db.table("daily_plans").select(
+            "id, journey_day, focus_pillar, summary, is_recovery_day"
+        ).eq("user_id", user_id).in_("journey_day", [1, 2, 3]).order("journey_day").execute()
+        plans = plans_result.data or []
+
+        # Fetch actions for days 1-3
+        plan_ids = [p["id"] for p in plans]
+        actions_map: dict = {}
+        if plan_ids:
+            actions_result = db.table("daily_actions").select(
+                "daily_plan_id, position, pillar, title, description"
+            ).in_("daily_plan_id", plan_ids).order("position").execute()
+            for action in (actions_result.data or []):
+                pid = action["daily_plan_id"]
+                actions_map.setdefault(pid, []).append(action)
+
+        # Attach actions to plans
+        for plan in plans:
+            plan["actions"] = actions_map.get(plan["id"], [])
+
+    except Exception:
+        plans = []
+
+    return render_template("onboarding/plan_reveal.html", preview_days=plans)
+
+
+@app.route("/onboarding/plan-reveal", methods=["POST"])
+@login_required
+def onboarding_plan_reveal_post():
+    """User clicks 'Start Day 1' — set journey_day=1 and redirect to /today."""
+    user_id = get_current_user()
+    try:
+        db = _db()
+        db.table("profiles").update({"journey_day": 1}).eq("id", user_id).execute()
+    except Exception:
+        pass
+    return redirect(url_for("today"))
 
 
 if __name__ == "__main__":

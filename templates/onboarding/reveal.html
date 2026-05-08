@@ -1,0 +1,107 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('onboarding.reveal.tag') }}{% endblock %}
+
+{% block nav_right %}{% endblock %}
+
+{% block content %}
+<section class="onboarding-section">
+    <div class="onboarding-container">
+
+        <div class="onboarding-step-tag">{{ t('onboarding.reveal.tag') }}</div>
+
+        {# --- Overall score reveal --- #}
+        <div class="reveal-score-block">
+            <p class="reveal-score-label">{{ t('onboarding.reveal.score_label') }}</p>
+            <div class="reveal-score-number">{{ scores.overall }}</div>
+            <div class="reveal-score-bar">
+                <div class="reveal-score-fill" style="width: {{ scores.overall }}%"></div>
+            </div>
+        </div>
+
+        {# --- Archetypes --- #}
+        <div class="reveal-archetypes">
+            <div class="reveal-archetype-block">
+                <p class="reveal-archetype-label">{{ t('onboarding.reveal.current_archetype_label') }}</p>
+                <h2 class="reveal-archetype-name">{{ profile.archetype or '—' }}</h2>
+            </div>
+            <div class="reveal-archetype-arrow">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" aria-hidden="true">
+                    {% if is_rtl() %}
+                    <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                    {% else %}
+                    <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+                    {% endif %}
+                </svg>
+            </div>
+            <div class="reveal-archetype-block">
+                <p class="reveal-archetype-label">{{ t('onboarding.reveal.target_label') }}</p>
+                <h2 class="reveal-archetype-name reveal-archetype-name--gold">{{ profile.target_archetype or '—' }}</h2>
+            </div>
+        </div>
+
+        {# --- Detailed scores --- #}
+        <div class="reveal-scores-section">
+            <p class="reveal-section-title">{{ t('onboarding.reveal.scores_title') }}</p>
+            <div class="reveal-scores-grid">
+                {% set pillars = [
+                    ('hair',    t('onboarding.reveal.pillar.hair'),    scores.hair),
+                    ('style',   t('onboarding.reveal.pillar.style'),   scores.style),
+                    ('fitness', t('onboarding.reveal.pillar.fitness'), scores.fitness),
+                    ('skin',    t('onboarding.reveal.pillar.skin'),    scores.skin),
+                ] %}
+                {% for key, label, value in pillars %}
+                <div class="score-item">
+                    <span>{{ label }}</span>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: {{ value }}%"></div>
+                    </div>
+                    <span class="score-num">{{ value }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# --- Strength and improvement --- #}
+        {% if strength or improvement %}
+        <div class="reveal-insights">
+            {% if strength %}
+            <div class="reveal-insight-block reveal-insight-block--strength">
+                <span class="reveal-insight-label">{{ t('onboarding.reveal.strength_label') }}</span>
+                <p class="reveal-insight-text">{{ strength }}</p>
+            </div>
+            {% endif %}
+            {% if improvement %}
+            <div class="reveal-insight-block reveal-insight-block--improve">
+                <span class="reveal-insight-label">{{ t('onboarding.reveal.improvement_label') }}</span>
+                <p class="reveal-insight-text">{{ improvement }}</p>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {# --- Observations --- #}
+        {% if observations %}
+        <div class="reveal-observations">
+            <p class="reveal-section-title">{{ t('onboarding.reveal.observations_title') }}</p>
+            <ul class="reveal-obs-list">
+                {% for obs in observations %}
+                <li class="reveal-obs-item">
+                    <span class="card-number">{{ '%02d' % loop.index }}</span>
+                    <p>{{ obs }}</p>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {# --- CTA --- #}
+        <div class="reveal-cta">
+            <form method="POST" action="{{ url_for('onboarding_plan') }}">
+                <button type="submit" class="btn reveal-cta-btn">{{ t('onboarding.reveal.cta') }}</button>
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

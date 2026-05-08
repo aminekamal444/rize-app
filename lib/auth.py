@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import Optional
+from typing import Optional, Tuple
 
 from flask import redirect, session, url_for
 
 
 _SESSION_KEY = "user_id"
+_ACCESS_TOKEN_KEY = "sb_access_token"
+_REFRESH_TOKEN_KEY = "sb_refresh_token"
 
 
 def login_required(f):
@@ -24,11 +26,29 @@ def get_current_user() -> Optional[str]:
     return session.get(_SESSION_KEY)
 
 
-def set_user_session(user_id: str) -> None:
-    """Store the authenticated user_id in the session."""
+def set_user_session(
+    user_id: str,
+    access_token: str = "",
+    refresh_token: str = "",
+) -> None:
+    """Store the authenticated user_id and Supabase JWT tokens in the session."""
     session[_SESSION_KEY] = user_id
+    if access_token:
+        session[_ACCESS_TOKEN_KEY] = access_token
+    if refresh_token:
+        session[_REFRESH_TOKEN_KEY] = refresh_token
+
+
+def get_supabase_tokens() -> Tuple[str, str]:
+    """Return (access_token, refresh_token) from session, or ('', '') if absent."""
+    return (
+        session.get(_ACCESS_TOKEN_KEY, ""),
+        session.get(_REFRESH_TOKEN_KEY, ""),
+    )
 
 
 def clear_user_session() -> None:
-    """Remove the user from the session (logout)."""
+    """Remove the user and all tokens from the session (logout)."""
     session.pop(_SESSION_KEY, None)
+    session.pop(_ACCESS_TOKEN_KEY, None)
+    session.pop(_REFRESH_TOKEN_KEY, None)

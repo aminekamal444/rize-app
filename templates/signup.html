@@ -1,41 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RIZE — Sign Up</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
+{% extends "shared/layout.html" %}
 
-    <nav>
-        <h1 class="logo">RIZE</h1>
-        <a href="/login" class="nav-login">Login</a>
-    </nav>
+{% block title %}RIZE — Sign Up{% endblock %}
 
-    <section class="auth-section">
-        <div class="auth-card">
-            <h2>Create Your Account</h2>
-            <p class="auth-sub">Start your 30 day transformation</p>
+{% block nav_right %}
+    <a href="{{ url_for('login') }}" class="nav-login">Login</a>
+{% endblock %}
 
-            <!-- Google Sign Up — will be activated when Supabase is connected -->
-            <button class="btn-google" disabled>
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20"/>
-                Continue with Google
-            </button>
+{% block content %}
+<section class="auth-section">
+    <div class="auth-card">
+        <h2>Create Your Account</h2>
+        <p class="auth-sub">Start your 30-day transformation</p>
 
-            <div class="divider"><span>or</span></div>
+        <button class="btn-google" disabled>
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width="20"/>
+            Continue with Google
+        </button>
 
-            <form class="auth-form" action="/signup" method="POST">
-                <input type="email" name="email" placeholder="Email address" required />
-                <input type="password" name="password" placeholder="Password" required />
-                <input type="password" name="confirm_password" placeholder="Confirm password" required />
-                <button type="submit" class="btn">Create Account</button>
-            </form>
+        <div class="divider"><span>or</span></div>
 
-            <p class="auth-link">Already have an account? <a href="/login">Login</a></p>
-        </div>
-    </section>
+        {% if error %}
+        <div class="onboarding-error">{{ error }}</div>
+        {% endif %}
 
-</body>
-</html>
+        <form class="auth-form" action="{{ url_for('signup_post') }}" method="POST">
+            <input type="email" name="email" placeholder="Email address" value="{{ email or '' }}" required />
+            <input type="password" name="password" placeholder="Password (min 6 characters)" required />
+            <input type="password" name="confirm_password" placeholder="Confirm password" required />
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+
+        <p class="auth-link">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+    </div>
+</section>
+{% endblock %}
