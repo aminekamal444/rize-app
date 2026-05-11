@@ -8,33 +8,122 @@
 <section class="onboarding-section">
     <div class="onboarding-container">
 
-        <div class="onboarding-step-tag">03 / 05</div>
+        <div class="onboarding-step-tag">{{ t('onboarding.goal.step_label') }}</div>
 
         <div class="onboarding-header">
-            <h2>{{ t('onboarding.goal.title') }}</h2>
+            <h2>{{ t('onboarding.goal.headline') }}</h2>
+            <p class="onboarding-sub">{{ t('onboarding.goal.subtitle') }}</p>
         </div>
 
         {% if error %}
         <div class="onboarding-error">{{ error }}</div>
         {% endif %}
 
-        <form method="POST" action="{{ url_for('onboarding_goal_post') }}" class="onboarding-form">
+        <form method="POST" action="{{ url_for('onboarding_goal_post') }}" class="onboarding-form" id="goal-form">
 
-            <div class="form-group">
-                <label for="biggest_goal">{{ t('onboarding.goal.prompt') }}</label>
-                <textarea
-                    id="biggest_goal"
-                    name="biggest_goal"
-                    rows="4"
-                    placeholder="{{ t('onboarding.goal.placeholder') }}"
-                    required
-                >{{ biggest_goal or '' }}</textarea>
+            <div class="goal-cards-grid">
+
+                <label class="goal-card" data-value="build_muscle">
+                    <input type="checkbox" name="goals" value="build_muscle" class="goal-checkbox">
+                    <span class="goal-card-label">{{ t('onboarding.goal.cards.build_muscle') }}</span>
+                </label>
+
+                <label class="goal-card" data-value="get_leaner">
+                    <input type="checkbox" name="goals" value="get_leaner" class="goal-checkbox">
+                    <span class="goal-card-label">{{ t('onboarding.goal.cards.get_leaner') }}</span>
+                </label>
+
+                <label class="goal-card" data-value="better_skin">
+                    <input type="checkbox" name="goals" value="better_skin" class="goal-checkbox">
+                    <span class="goal-card-label">{{ t('onboarding.goal.cards.better_skin') }}</span>
+                </label>
+
+                <label class="goal-card" data-value="better_hair">
+                    <input type="checkbox" name="goals" value="better_hair" class="goal-checkbox">
+                    <span class="goal-card-label">{{ t('onboarding.goal.cards.better_hair') }}</span>
+                </label>
+
+                <label class="goal-card" data-value="sharper_grooming">
+                    <input type="checkbox" name="goals" value="sharper_grooming" class="goal-checkbox">
+                    <span class="goal-card-label">{{ t('onboarding.goal.cards.sharper_grooming') }}</span>
+                </label>
+
+                <label class="goal-card" data-value="better_style">
+                    <input type="checkbox" name="goals" value="better_style" class="goal-checkbox">
+                    <span class="goal-card-label">{{ t('onboarding.goal.cards.better_style') }}</span>
+                </label>
+
+                <label class="goal-card" data-value="better_posture">
+                    <input type="checkbox" name="goals" value="better_posture" class="goal-checkbox">
+                    <span class="goal-card-label">{{ t('onboarding.goal.cards.better_posture') }}</span>
+                </label>
+
+                <label class="goal-card" data-value="other">
+                    <input type="checkbox" name="goals" value="other" class="goal-checkbox">
+                    <span class="goal-card-label">{{ t('onboarding.goal.cards.other') }}</span>
+                </label>
+
             </div>
 
-            <button type="submit" class="btn onboarding-submit">{{ t('onboarding.goal.submit') }}</button>
+            <div class="form-group" style="margin-top: 24px;">
+                <label for="context">{{ t('onboarding.goal.context_label') }}</label>
+                <textarea
+                    id="context"
+                    name="context"
+                    class="goal-context-textarea"
+                    placeholder="{{ t('onboarding.goal.context_placeholder') }}"
+                    rows="3"
+                ></textarea>
+            </div>
+
+            <button type="submit" class="btn onboarding-submit goal-continue-btn" id="goal-continue-btn" disabled>
+                {{ t('onboarding.goal.continue_btn') }}
+            </button>
 
         </form>
 
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var checkboxes = document.querySelectorAll('.goal-checkbox');
+    var cards = document.querySelectorAll('.goal-card');
+    var continueBtn = document.getElementById('goal-continue-btn');
+    var MAX = 5;
+
+    function getCheckedCount() {
+        return document.querySelectorAll('.goal-checkbox:checked').length;
+    }
+
+    function updateUI() {
+        var count = getCheckedCount();
+        continueBtn.disabled = count === 0;
+
+        cards.forEach(function (card) {
+            var cb = card.querySelector('.goal-checkbox');
+            card.classList.toggle('selected', cb.checked);
+            card.classList.toggle('disabled', !cb.checked && count >= MAX);
+        });
+    }
+
+    // Intercept label clicks to block selecting a 4th card
+    cards.forEach(function (card) {
+        card.addEventListener('click', function (e) {
+            var cb = card.querySelector('.goal-checkbox');
+            if (!cb.checked && getCheckedCount() >= MAX) {
+                e.preventDefault();
+            }
+        });
+    });
+
+    checkboxes.forEach(function (cb) {
+        cb.addEventListener('change', updateUI);
+    });
+
+    updateUI();
+}());
+</script>
 {% endblock %}

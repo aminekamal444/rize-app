@@ -37,8 +37,8 @@ def build_plan_prompt(
     return f"""You are building a personalized 30-day transformation plan for {name}.
 
 Their profile:
-- Biggest goal: {goal}
-- Biggest insecurity: {insecurity}
+- Priorities (multiple areas selected): {goal}
+- Additional context from user: {insecurity if insecurity and insecurity.strip() else "(none provided)"}
 - Current archetype: {archetype}
 - 30-day destination archetype: {target}
 - Baseline scores — Hair: {hair_score}/100, Style: {style_score}/100, Fitness: {fitness_score}/100, Skin: {skin_score}/100
@@ -53,8 +53,8 @@ Rules for the plan:
 4. Actions must be SPECIFIC and immediately actionable:
    - Bad: "drink water"
    - Good: "drink 2 litres of water throughout the day — keep a bottle with you"
-5. Weight actions toward the pillars with the lowest scores and the insecurities identified above.
-6. Respect the user's stated biggest goal — weave it throughout.
+5. Weight actions toward the pillars with the lowest scores and the priorities identified above.
+6. The user has selected multiple priorities. Distribute actions across ALL their priorities throughout the 30 days. Don't focus all actions on just one priority.
 7. Escalate gradually: Week 1 is lighter and habit-forming, Week 4 has fuller routines.
 8. Include at least one action with the word "haircut" in its title (this triggers the barber card feature).
 9. On days 7, 14, 21, and 28 — include an action with "weekly photo" in its title (triggers the weekly check-in feature).
@@ -139,8 +139,8 @@ def build_chunked_plan_prompt(
     return f"""You are building part of a personalized 30-day transformation plan for {name}.
 
 Their profile:
-- Biggest goal: {goal}
-- Biggest insecurity: {insecurity}
+- Priorities (multiple areas selected): {goal}
+- Additional context from user: {insecurity if insecurity and insecurity.strip() else "(none provided)"}
 - Current archetype: {archetype}
 - 30-day destination archetype: {target}
 - Baseline scores — Hair: {hair_score}/100, Style: {style_score}/100, Fitness: {fitness_score}/100, Skin: {skin_score}/100
@@ -153,7 +153,7 @@ Rules:
 2. Each day has 1 to 3 actions — vary the count, do not always use 3.
 3. Include at least one recovery/lighter day in this chunk. Mark it with is_recovery_day: true and focus_pillar: "recovery".
 4. Actions must be SPECIFIC and immediately actionable (not "drink water" — "drink 2L of water throughout the day").
-5. Weight actions toward the pillars with the lowest scores and the insecurities identified above.
+5. Weight actions toward the pillars with the lowest scores and all selected priorities. Distribute across ALL priorities — do not focus on just one.
 6. All text must be in {language}.
 7. STRICT RULE — NO SPECIFIC CLOCK TIMES: Never use specific clock times in actions. Do not say "18h", "20h", "8 AM", "before 6 PM", or any hour-specific deadline. Instead use flexible time references:
     - Workouts and physical activities: use "dans la journée" or "quand tu as 10 minutes"
@@ -216,14 +216,15 @@ def build_compact_plan_prompt(
 
     return f"""Build a 30-day transformation plan for {name}.
 
-Goal: {goal}
-Insecurity: {insecurity}
+Priorities (multiple selected): {goal}
+Additional context: {insecurity if insecurity and insecurity.strip() else "(none)"}
 Current: {archetype} → Target: {target}
 Scores: Hair {hair_score}, Style {style_score}, Fitness {fitness_score}, Skin {skin_score}
 
 Rules:
 - 30 days, 1–3 actions each, at least 4 recovery days
 - Actions must be specific (not "drink water" — "drink 2L water throughout the day")
+- Distribute across ALL selected priorities — do not focus on just one
 - Weight toward lowest-scoring pillars
 - Week 1 lighter, Week 4 fuller
 - Day 7, 14, 21, 28 must include action with "weekly photo" in title

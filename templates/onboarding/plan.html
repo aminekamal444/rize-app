@@ -6,47 +6,32 @@
 
 {% block content %}
 <section class="onboarding-section">
-    <div class="onboarding-container onboarding-container--narrow">
+    <div class="plan-loading-container">
 
         {% if error %}
-        <div class="onboarding-header">
-            <h2>{{ t('onboarding.plan.title') }}</h2>
-        </div>
-        <div class="onboarding-error">{{ error }}</div>
-        <div style="text-align:center;margin-top:32px;">
-            <a href="{{ url_for('onboarding_reveal') }}" class="btn-outline">{{ t('onboarding.plan.retry') }}</a>
-        </div>
+
+        <h2 class="plan-loading-headline">{{ t('onboarding.plan.loading.headline') }}</h2>
+        <p class="plan-loading-error">{{ error }}</p>
+        <form id="retry-form" method="POST" action="{{ url_for('onboarding_plan_post') }}">
+        </form>
+        <button class="plan-loading-retry-btn" onclick="document.getElementById('retry-form').submit()">
+            {{ t('onboarding.plan.loading.retry') }}
+        </button>
 
         {% else %}
 
-        <div class="analyzing-screen">
+        <h2 class="plan-loading-headline">{{ t('onboarding.plan.loading.headline') }}</h2>
 
-            <div class="onboarding-step-tag" style="margin-top:32px;">{{ t('onboarding.plan.title') }}</div>
-            <p class="onboarding-sub" style="margin-top:16px;">{{ t('onboarding.plan.subtitle') }}</p>
+        <p class="plan-loading-subtitle" id="loading-subtitle">
+            {{ t('onboarding.plan.loading.msg_1') }}
+        </p>
 
-            <div class="analyzing-steps">
-                <div class="analyzing-step analyzing-step--active">
-                    <span class="analyzing-step-dot"></span>
-                    <span>{{ t('onboarding.plan.step_1') }}</span>
-                </div>
-                <div class="analyzing-step">
-                    <span class="analyzing-step-dot"></span>
-                    <span>{{ t('onboarding.plan.step_2') }}</span>
-                </div>
-                <div class="analyzing-step">
-                    <span class="analyzing-step-dot"></span>
-                    <span>{{ t('onboarding.plan.step_3') }}</span>
-                </div>
-                <div class="analyzing-step">
-                    <span class="analyzing-step-dot"></span>
-                    <span>{{ t('onboarding.plan.step_4') }}</span>
-                </div>
-            </div>
+        <div class="plan-loading-dot"></div>
 
-            <form id="plan-form" method="POST" action="{{ url_for('onboarding_plan_post') }}">
-            </form>
+        <p class="plan-loading-reassurance">{{ t('onboarding.plan.loading.reassurance') }}</p>
 
-        </div>
+        <form id="plan-form" method="POST" action="{{ url_for('onboarding_plan_post') }}" style="display:none;">
+        </form>
 
         {% endif %}
 
@@ -57,19 +42,27 @@
 {% block scripts %}
 {% if not error %}
 <script>
-    var steps = document.querySelectorAll('.analyzing-step');
-    var current = 0;
-    var interval = setInterval(function() {
-        if (steps[current]) steps[current].classList.remove('analyzing-step--active');
-        current = (current + 1) % steps.length;
-        if (steps[current]) steps[current].classList.add('analyzing-step--active');
-    }, 1200);
+    var messages = [
+        {{ t('onboarding.plan.loading.msg_1') | tojson }},
+        {{ t('onboarding.plan.loading.msg_2') | tojson }},
+        {{ t('onboarding.plan.loading.msg_3') | tojson }},
+        {{ t('onboarding.plan.loading.msg_4') | tojson }}
+    ];
+    var subtitle = document.getElementById('loading-subtitle');
+    var index = 0;
 
-    // Longer delay for plan generation (AI call takes ~10s)
+    setInterval(function() {
+        subtitle.style.opacity = '0';
+        setTimeout(function() {
+            index = (index + 1) % messages.length;
+            subtitle.textContent = messages[index];
+            subtitle.style.opacity = '1';
+        }, 400);
+    }, 5000);
+
     setTimeout(function() {
-        clearInterval(interval);
         document.getElementById('plan-form').submit();
-    }, 2000);
+    }, 300);
 </script>
 {% endif %}
 {% endblock %}

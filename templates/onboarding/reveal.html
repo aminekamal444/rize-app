@@ -108,9 +108,7 @@
 
         {# --- CTA --- #}
         <div class="reveal-cta">
-            <form method="POST" action="{{ url_for('onboarding_plan') }}">
-                <button type="submit" class="btn reveal-cta-btn">{{ t('onboarding.reveal.cta') }}</button>
-            </form>
+            <a href="{{ url_for('onboarding_plan') }}" class="btn reveal-cta-btn">{{ t('onboarding.reveal.cta') }}</a>
         </div>
 
     </div>

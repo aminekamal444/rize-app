@@ -16,6 +16,17 @@ from lib.prompts.plan_generator import build_plan_prompt, build_compact_plan_pro
 
 load_dotenv()
 
+
+def _safe_int(value, default=0):
+    """Coerce value to int, falling back to default for None or invalid."""
+    if value is None:
+        return default
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-me")
 
@@ -686,11 +697,10 @@ def onboarding():
         0: "onboarding_language",
         1: "onboarding_profile",
         2: "onboarding_goal",
-        3: "onboarding_insecurity",
-        4: "onboarding_photo",
-        5: "onboarding_analyzing",
-        6: "onboarding_reveal",
-        7: "onboarding_plan_reveal",
+        3: "onboarding_photo",
+        4: "onboarding_analyzing",
+        5: "onboarding_reveal",
+        6: "onboarding_plan_reveal",
     }
     return redirect(url_for(step_map.get(step, "onboarding_language")))
 
@@ -792,60 +802,31 @@ def onboarding_goal():
 @login_required
 def onboarding_goal_post():
     user_id = get_current_user()
-    biggest_goal = (request.form.get("biggest_goal") or "").strip()
+    goals = request.form.getlist("goals")
+    context = (request.form.get("context") or "").strip()
 
-    if not biggest_goal:
+    if not goals:
         return render_template("onboarding/goal.html",
-                               error=t("onboarding.goal.error"))
+                               error=t("onboarding.goal.error_no_selection"))
+    if len(goals) > 5:
+        return render_template("onboarding/goal.html",
+                               error=t("onboarding.goal.error_max_selection"))
 
     try:
         db = _db()
         db.table("profiles").update({
-            "biggest_goal": biggest_goal,
+            "biggest_goal": json.dumps(goals),
+            "biggest_insecurity": context,
             "onboarding_step": 3,
         }).eq("id", user_id).execute()
     except Exception as exc:
-        return render_template("onboarding/goal.html",
-                               error=str(exc), biggest_goal=biggest_goal)
-
-    return redirect(url_for("onboarding_insecurity"))
-
-
-# ---------------------------------------------------------------------------
-# Step 4 — Biggest insecurity
-# ---------------------------------------------------------------------------
-
-@app.route("/onboarding/insecurity", methods=["GET"])
-@login_required
-def onboarding_insecurity():
-    return render_template("onboarding/insecurity.html")
-
-
-@app.route("/onboarding/insecurity", methods=["POST"])
-@login_required
-def onboarding_insecurity_post():
-    user_id = get_current_user()
-    biggest_insecurity = (request.form.get("biggest_insecurity") or "").strip()
-
-    if not biggest_insecurity:
-        return render_template("onboarding/insecurity.html",
-                               error=t("onboarding.insecurity.error"))
-
-    try:
-        db = _db()
-        db.table("profiles").update({
-            "biggest_insecurity": biggest_insecurity,
-            "onboarding_step": 4,
-        }).eq("id", user_id).execute()
-    except Exception as exc:
-        return render_template("onboarding/insecurity.html",
-                               error=str(exc), biggest_insecurity=biggest_insecurity)
+        return render_template("onboarding/goal.html", error=str(exc))
 
     return redirect(url_for("onboarding_photo"))
 
 
 # ---------------------------------------------------------------------------
-# Step 5 — Baseline photo upload
+# Step 4 — Baseline photo upload
 # ---------------------------------------------------------------------------
 
 @app.route("/onboarding/photo", methods=["GET"])
@@ -890,23 +871,43 @@ def onboarding_photo_post():
             {"content-type": "image/jpeg"},
         )
 
-        # Database insert continues using the authenticated user's client (RLS still applies)
-        db = _db()
-        insert_result = db.table("photos").insert({
-            "user_id": user_id,
-            "type": "baseline",
-            "storage_path": storage_path,
-            "bucket": "progress-photos",
-            "journey_day": 0,
-        }).execute()
+        # Upsert: if a baseline row already exists (e.g., from a previous upload
+        # or a rapid double-submit), update it and clear stale analysis data so
+        # the analyzing step runs fresh. Otherwise insert a new row.
+        existing = admin.table("photos").select("id").eq(
+            "user_id", user_id
+        ).eq("type", "baseline").execute()
 
-        photo_id = insert_result.data[0]["id"] if insert_result.data else None
+        if existing.data and len(existing.data) > 0:
+            photo_id = existing.data[0]["id"]
+            admin.table("photos").update({
+                "storage_path": storage_path,
+                "bucket": "progress-photos",
+                "journey_day": 0,
+                "score_overall": None,
+                "score_hair": None,
+                "score_style": None,
+                "score_fitness": None,
+                "score_skin": None,
+                "strength": None,
+                "improvement": None,
+                "observations": None,
+            }).eq("id", photo_id).execute()
+        else:
+            insert_result = admin.table("photos").insert({
+                "user_id": user_id,
+                "type": "baseline",
+                "storage_path": storage_path,
+                "bucket": "progress-photos",
+                "journey_day": 0,
+            }).execute()
+            photo_id = insert_result.data[0]["id"] if insert_result.data else None
 
         # Store path + photo_id in session for the analyzing step
         session["baseline_photo_path"] = storage_path
         session["baseline_photo_id"] = photo_id
 
-        db.table("profiles").update({"onboarding_step": 5}).eq("id", user_id).execute()
+        db.table("profiles").update({"onboarding_step": 4}).eq("id", user_id).execute()
 
     except Exception as exc:
         return render_template("onboarding/photo.html",
@@ -959,7 +960,18 @@ def onboarding_analyzing_post():
         profile = profile_result.data or {}
 
         language = profile.get("preferred_language") or get_language()
-        biggest_goal = profile.get("biggest_goal") or ""
+
+        # biggest_goal is now a JSON array string (multi-select); fall back
+        # gracefully for any user who completed the old single-string flow.
+        raw_goals = profile.get("biggest_goal") or "[]"
+        try:
+            goals_list = json.loads(raw_goals) if raw_goals else []
+            if not isinstance(goals_list, list):
+                goals_list = [str(goals_list)] if goals_list else []
+        except (json.JSONDecodeError, TypeError):
+            goals_list = [str(raw_goals)] if raw_goals else []
+        biggest_goal = ", ".join(goals_list)
+
         biggest_insecurity = profile.get("biggest_insecurity") or ""
 
         # Download the compressed baseline photo from storage
@@ -1004,7 +1016,7 @@ def onboarding_analyzing_post():
             "archetype": current_archetype,
             "target_archetype": target_archetype,
             "baseline_score": scores.get("overall"),
-            "onboarding_step": 6,
+            "onboarding_step": 5,
         }).eq("id", user_id).execute()
 
         # Clear temporary session keys
@@ -1056,11 +1068,13 @@ def onboarding_reveal():
             observations = []
 
         scores = {
-            "hair": photo.get("score_hair", 0),
-            "style": photo.get("score_style", 0),
-            "fitness": photo.get("score_fitness", 0),
-            "skin": photo.get("score_skin", 0),
-            "overall": photo.get("score_overall", profile.get("baseline_score", 0)),
+            "hair": _safe_int(photo.get("score_hair")),
+            "style": _safe_int(photo.get("score_style")),
+            "fitness": _safe_int(photo.get("score_fitness")),
+            "skin": _safe_int(photo.get("score_skin")),
+            "overall": _safe_int(
+                photo.get("score_overall") or profile.get("baseline_score")
+            ),
         }
 
     except Exception:
@@ -1119,13 +1133,24 @@ def onboarding_plan_post():
             observations = []
 
         scores = {
-            "hair": photo.get("score_hair", 50),
-            "style": photo.get("score_style", 50),
-            "fitness": photo.get("score_fitness", 50),
-            "skin": photo.get("score_skin", 50),
+            "hair": _safe_int(photo.get("score_hair"), 50),
+            "style": _safe_int(photo.get("score_style"), 50),
+            "fitness": _safe_int(photo.get("score_fitness"), 50),
+            "skin": _safe_int(photo.get("score_skin"), 50),
         }
 
         language = profile.get("preferred_language") or get_language()
+
+        # biggest_goal is now a JSON array string; parse to comma-separated text
+        # for the AI prompts. Falls back gracefully for old single-string format.
+        raw_goals = profile.get("biggest_goal") or "[]"
+        try:
+            goals_list = json.loads(raw_goals) if raw_goals else []
+            if not isinstance(goals_list, list):
+                goals_list = [str(goals_list)] if goals_list else []
+        except (json.JSONDecodeError, TypeError):
+            goals_list = [str(raw_goals)] if raw_goals else []
+        profile["biggest_goal"] = ", ".join(goals_list)
 
         # --- Generate plan in 3 chunks to avoid JSON truncation ---
         import re as _re
@@ -1241,7 +1266,7 @@ def onboarding_plan_post():
         # Mark onboarding complete
         db.table("profiles").update({
             "onboarding_complete": True,
-            "onboarding_step": 7,
+            "onboarding_step": 6,
             "journey_start_date": journey_start,
             "journey_day": 0,
         }).eq("id", user_id).execute()

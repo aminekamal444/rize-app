@@ -28,8 +28,8 @@ Calibration guide (be realistic, not flattering):
 - Under 40 only when there are serious, obvious issues
 - Do not inflate scores to be kind
 
-The user's stated transformation goal: {biggest_goal}
-Their biggest stated insecurity: {biggest_insecurity}
+User's priorities (may include multiple): {biggest_goal}
+Additional context from user: {biggest_insecurity if biggest_insecurity and biggest_insecurity.strip() else "(none provided — do not invent any)"}
 
 Score across four pillars (0–100 each):
 - HAIR: cut quality, condition, suitability for their face shape, styling

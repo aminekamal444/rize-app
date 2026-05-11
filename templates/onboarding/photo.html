@@ -73,5 +73,16 @@
             document.getElementById('upload-filename').textContent = file.name;
         }
     });
+
+    document.querySelector('form[action*="/onboarding/photo"]').addEventListener('submit', function(e) {
+        var btn = this.querySelector('button[type=submit]');
+        if (btn && !btn.disabled) {
+            btn.disabled = true;
+            btn.textContent = '{{ t("onboarding.photo.analyzing_btn") }}';
+        } else {
+            e.preventDefault();
+            return false;
+        }
+    });
 </script>
 {% endblock %}

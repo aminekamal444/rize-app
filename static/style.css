@@ -1323,6 +1323,84 @@ footer p {
 }
 
 /* -------------------------------------------------------------------------
+   Goal multi-select cards (onboarding step 3)
+   ------------------------------------------------------------------------- */
+
+.goal-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+@media (min-width: 768px) {
+    .goal-cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.goal-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-card);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 12px;
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s, opacity 0.2s;
+    text-align: center;
+    user-select: none;
+    min-height: 80px;
+}
+
+.goal-card:hover {
+    border-color: var(--gold);
+    background-color: var(--bg-card-hover);
+}
+
+.goal-card.selected {
+    border: 2px solid var(--gold);
+    background-color: #1a1500;
+}
+
+.goal-card.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.goal-card input[type="checkbox"] {
+    display: none;
+}
+
+.goal-card-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    line-height: 1.4;
+    transition: color 0.2s;
+}
+
+.goal-card.selected .goal-card-label {
+    color: var(--gold);
+}
+
+.goal-context-textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.goal-continue-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+}
+
+/* -------------------------------------------------------------------------
    Baseline photo guide
    ------------------------------------------------------------------------- */
 
@@ -1469,6 +1547,83 @@ footer p {
 
 .analyzing-step--active .analyzing-step-dot {
     background-color: var(--gold);
+}
+
+/* -------------------------------------------------------------------------
+   Plan generation loading screen
+   ------------------------------------------------------------------------- */
+
+.plan-loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    gap: 24px;
+    text-align: center;
+    padding: 40px 24px;
+}
+
+.plan-loading-headline {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+    margin: 0;
+}
+
+.plan-loading-subtitle {
+    font-size: 15px;
+    color: var(--text);
+    opacity: 0.7;
+    margin: 0;
+    transition: opacity 0.4s ease;
+}
+
+.plan-loading-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #c9a84c;
+    animation: pulse-loading-dot 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-loading-dot {
+    0%   { opacity: 1; transform: scale(1); }
+    50%  { opacity: 0.3; transform: scale(0.85); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.plan-loading-reassurance {
+    font-size: 13px;
+    color: var(--text);
+    opacity: 0.5;
+    margin: 0;
+}
+
+.plan-loading-error {
+    font-size: 14px;
+    color: #e05c5c;
+    margin: 0;
+    max-width: 320px;
+}
+
+.plan-loading-retry-btn {
+    display: inline-block;
+    padding: 14px 32px;
+    background-color: var(--gold);
+    color: #000;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.plan-loading-retry-btn:hover {
+    opacity: 0.88;
 }
 
 /* -------------------------------------------------------------------------
