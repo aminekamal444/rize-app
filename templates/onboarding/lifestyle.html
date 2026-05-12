@@ -1,0 +1,135 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('onboarding.lifestyle.step_label') }}{% endblock %}
+
+{% block nav_right %}{% endblock %}
+
+{% block content %}
+<section class="onboarding-section">
+    <div class="onboarding-container">
+
+        <div class="onboarding-step-tag">{{ t('onboarding.lifestyle.step_label') }}</div>
+
+        <div class="onboarding-header">
+            <h2>{{ t('onboarding.lifestyle.headline') }}</h2>
+            <p class="onboarding-sub">{{ t('onboarding.lifestyle.subtitle') }}</p>
+        </div>
+
+        {% if error %}
+        <div class="onboarding-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('onboarding_lifestyle_post') }}" class="onboarding-form" id="lifestyle-form">
+
+            {# --- Question 1: Daily pattern --- #}
+            <div class="lifestyle-question-block">
+                <p class="lifestyle-question-label">{{ t('onboarding.lifestyle.q1_label') }}</p>
+                <div class="goal-cards-grid">
+                    <label class="goal-card lifestyle-card" data-group="q1" data-value="mostly_sitting">
+                        <input type="radio" name="daily_pattern" value="mostly_sitting" class="lifestyle-radio q1-radio">
+                        <div class="lifestyle-card-content">
+                            <span class="lifestyle-card-label">{{ t('onboarding.lifestyle.q1_options.mostly_sitting.label') }}</span>
+                            <span class="lifestyle-card-descriptor">{{ t('onboarding.lifestyle.q1_options.mostly_sitting.descriptor') }}</span>
+                        </div>
+                    </label>
+                    <label class="goal-card lifestyle-card" data-group="q1" data-value="mostly_active">
+                        <input type="radio" name="daily_pattern" value="mostly_active" class="lifestyle-radio q1-radio">
+                        <div class="lifestyle-card-content">
+                            <span class="lifestyle-card-label">{{ t('onboarding.lifestyle.q1_options.mostly_active.label') }}</span>
+                            <span class="lifestyle-card-descriptor">{{ t('onboarding.lifestyle.q1_options.mostly_active.descriptor') }}</span>
+                        </div>
+                    </label>
+                    <label class="goal-card lifestyle-card" data-group="q1" data-value="mixed">
+                        <input type="radio" name="daily_pattern" value="mixed" class="lifestyle-radio q1-radio">
+                        <div class="lifestyle-card-content">
+                            <span class="lifestyle-card-label">{{ t('onboarding.lifestyle.q1_options.mixed.label') }}</span>
+                            <span class="lifestyle-card-descriptor">{{ t('onboarding.lifestyle.q1_options.mixed.descriptor') }}</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            {# --- Question 2: Activity level --- #}
+            <div class="lifestyle-question-block">
+                <p class="lifestyle-question-label">{{ t('onboarding.lifestyle.q2_label') }}</p>
+                <div class="goal-cards-grid">
+                    <label class="goal-card lifestyle-card" data-group="q2" data-value="sedentary">
+                        <input type="radio" name="activity_level" value="sedentary" class="lifestyle-radio q2-radio">
+                        <div class="lifestyle-card-content">
+                            <span class="lifestyle-card-label">{{ t('onboarding.lifestyle.q2_options.sedentary.label') }}</span>
+                            <span class="lifestyle-card-descriptor">{{ t('onboarding.lifestyle.q2_options.sedentary.descriptor') }}</span>
+                        </div>
+                    </label>
+                    <label class="goal-card lifestyle-card" data-group="q2" data-value="occasional">
+                        <input type="radio" name="activity_level" value="occasional" class="lifestyle-radio q2-radio">
+                        <div class="lifestyle-card-content">
+                            <span class="lifestyle-card-label">{{ t('onboarding.lifestyle.q2_options.occasional.label') }}</span>
+                            <span class="lifestyle-card-descriptor">{{ t('onboarding.lifestyle.q2_options.occasional.descriptor') }}</span>
+                        </div>
+                    </label>
+                    <label class="goal-card lifestyle-card" data-group="q2" data-value="regular">
+                        <input type="radio" name="activity_level" value="regular" class="lifestyle-radio q2-radio">
+                        <div class="lifestyle-card-content">
+                            <span class="lifestyle-card-label">{{ t('onboarding.lifestyle.q2_options.regular.label') }}</span>
+                            <span class="lifestyle-card-descriptor">{{ t('onboarding.lifestyle.q2_options.regular.descriptor') }}</span>
+                        </div>
+                    </label>
+                    <label class="goal-card lifestyle-card" data-group="q2" data-value="athletic">
+                        <input type="radio" name="activity_level" value="athletic" class="lifestyle-radio q2-radio">
+                        <div class="lifestyle-card-content">
+                            <span class="lifestyle-card-label">{{ t('onboarding.lifestyle.q2_options.athletic.label') }}</span>
+                            <span class="lifestyle-card-descriptor">{{ t('onboarding.lifestyle.q2_options.athletic.descriptor') }}</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            {# --- Question 3: Upcoming context (optional) --- #}
+            <div class="lifestyle-question-block">
+                <p class="lifestyle-question-label">{{ t('onboarding.lifestyle.q3_label') }}</p>
+                <p class="lifestyle-question-sublabel">{{ t('onboarding.lifestyle.q3_sublabel') }}</p>
+                <textarea
+                    name="upcoming_context"
+                    class="goal-context-textarea"
+                    placeholder="{{ t('onboarding.lifestyle.q3_placeholder') }}"
+                    rows="3"
+                ></textarea>
+            </div>
+
+            <button type="submit" class="btn onboarding-submit goal-continue-btn" id="lifestyle-continue-btn" disabled>
+                {{ t('onboarding.lifestyle.continue_btn') }}
+            </button>
+
+        </form>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var continueBtn = document.getElementById('lifestyle-continue-btn');
+
+    function updateBtn() {
+        var q1Done = document.querySelector('input[name="daily_pattern"]:checked');
+        var q2Done = document.querySelector('input[name="activity_level"]:checked');
+        continueBtn.disabled = !(q1Done && q2Done);
+    }
+
+    // Toggle selected class on radio cards (single-select per group)
+    document.querySelectorAll('.lifestyle-radio').forEach(function (radio) {
+        radio.addEventListener('change', function () {
+            var group = radio.closest('label').dataset.group;
+            document.querySelectorAll('[data-group="' + group + '"]').forEach(function (card) {
+                var r = card.querySelector('.lifestyle-radio');
+                card.classList.toggle('selected', r && r.checked);
+            });
+            updateBtn();
+        });
+    });
+
+    updateBtn();
+}());
+</script>
+{% endblock %}

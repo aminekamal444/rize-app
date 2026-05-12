@@ -62,6 +62,9 @@
                 {% if plan.summary %}
                 <p class="today-plan-summary">{{ plan.summary }}</p>
                 {% endif %}
+                {% if plan.theme %}
+                <p class="day-theme">{{ plan.theme }}</p>
+                {% endif %}
             </div>
             {% endif %}
 
@@ -98,6 +101,12 @@
                             <p class="action-card-title">{{ action.title }}</p>
                             {% if action.description %}
                             <p class="action-card-desc">{{ action.description }}</p>
+                            {% endif %}
+                            {% if action.why %}
+                            <p class="action-why">{{ action.why }}</p>
+                            {% endif %}
+                            {% if action.minimum %}
+                            <p class="action-minimum">{{ action.minimum }}</p>
                             {% endif %}
                         </div>
 

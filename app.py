@@ -217,7 +217,7 @@ def today():
 
         # Fetch today's plan
         plan_result = db.table("daily_plans").select(
-            "id, journey_day, focus_pillar, summary, is_recovery_day"
+            "id, journey_day, focus_pillar, summary, theme, is_recovery_day"
         ).eq("user_id", user_id).eq("journey_day", journey_day).execute()
         plan_rows = plan_result.data or []
         plan = plan_rows[0] if plan_rows else {}
@@ -226,7 +226,7 @@ def today():
         actions = []
         if plan.get("id"):
             actions_result = db.table("daily_actions").select(
-                "id, position, pillar, title, description, completed"
+                "id, position, pillar, title, description, why, minimum, completed"
             ).eq("daily_plan_id", plan["id"]).order("position").execute()
             actions = actions_result.data or []
 
@@ -697,10 +697,11 @@ def onboarding():
         0: "onboarding_language",
         1: "onboarding_profile",
         2: "onboarding_goal",
-        3: "onboarding_photo",
-        4: "onboarding_analyzing",
-        5: "onboarding_reveal",
-        6: "onboarding_plan_reveal",
+        3: "onboarding_lifestyle",
+        4: "onboarding_photo",
+        5: "onboarding_analyzing",
+        6: "onboarding_reveal",
+        7: "onboarding_plan_reveal",
     }
     return redirect(url_for(step_map.get(step, "onboarding_language")))
 
@@ -822,11 +823,51 @@ def onboarding_goal_post():
     except Exception as exc:
         return render_template("onboarding/goal.html", error=str(exc))
 
+    return redirect(url_for("onboarding_lifestyle"))
+
+
+# ---------------------------------------------------------------------------
+# Step 4 — Lifestyle check
+# ---------------------------------------------------------------------------
+
+@app.route("/onboarding/lifestyle", methods=["GET"])
+@login_required
+def onboarding_lifestyle():
+    return render_template("onboarding/lifestyle.html")
+
+
+@app.route("/onboarding/lifestyle", methods=["POST"])
+@login_required
+def onboarding_lifestyle_post():
+    user_id = get_current_user()
+
+    daily_pattern = request.form.get("daily_pattern", "")
+    activity_level = request.form.get("activity_level", "")
+    upcoming_context = (request.form.get("upcoming_context") or "").strip()
+
+    valid_patterns = {"mostly_sitting", "mostly_active", "mixed"}
+    valid_activity = {"sedentary", "occasional", "regular", "athletic"}
+
+    if daily_pattern not in valid_patterns or activity_level not in valid_activity:
+        return render_template("onboarding/lifestyle.html",
+                               error=t("onboarding.lifestyle.error_required"))
+
+    try:
+        admin = get_admin_supabase()
+        admin.table("profiles").update({
+            "daily_pattern": daily_pattern,
+            "activity_level": activity_level,
+            "upcoming_context": upcoming_context,
+            "onboarding_step": 4,
+        }).eq("id", user_id).execute()
+    except Exception as exc:
+        return render_template("onboarding/lifestyle.html", error=str(exc))
+
     return redirect(url_for("onboarding_photo"))
 
 
 # ---------------------------------------------------------------------------
-# Step 4 — Baseline photo upload
+# Step 5 — Baseline photo upload
 # ---------------------------------------------------------------------------
 
 @app.route("/onboarding/photo", methods=["GET"])
@@ -907,7 +948,7 @@ def onboarding_photo_post():
         session["baseline_photo_path"] = storage_path
         session["baseline_photo_id"] = photo_id
 
-        db.table("profiles").update({"onboarding_step": 4}).eq("id", user_id).execute()
+        admin.table("profiles").update({"onboarding_step": 5}).eq("id", user_id).execute()
 
     except Exception as exc:
         return render_template("onboarding/photo.html",
@@ -955,7 +996,8 @@ def onboarding_analyzing_post():
 
         # Fetch profile data for the prompt
         profile_result = db.table("profiles").select(
-            "preferred_language, biggest_goal, biggest_insecurity"
+            "preferred_language, biggest_goal, biggest_insecurity, "
+            "daily_pattern, activity_level, upcoming_context"
         ).eq("id", user_id).single().execute()
         profile = profile_result.data or {}
 
@@ -979,7 +1021,14 @@ def onboarding_analyzing_post():
         photo_b64 = base64.standard_b64encode(photo_bytes).decode("utf-8")
 
         # Call Claude Vision
-        prompt = build_baseline_score_prompt(language, biggest_goal, biggest_insecurity)
+        prompt = build_baseline_score_prompt(
+            language,
+            biggest_goal,
+            biggest_insecurity,
+            daily_pattern=profile.get("daily_pattern") or "",
+            activity_level=profile.get("activity_level") or "",
+            upcoming_context=profile.get("upcoming_context") or "",
+        )
         result = ask_claude_json(
             prompt,
             max_tokens=1000,
@@ -1016,7 +1065,7 @@ def onboarding_analyzing_post():
             "archetype": current_archetype,
             "target_archetype": target_archetype,
             "baseline_score": scores.get("overall"),
-            "onboarding_step": 5,
+            "onboarding_step": 6,
         }).eq("id", user_id).execute()
 
         # Clear temporary session keys
@@ -1111,7 +1160,8 @@ def onboarding_plan_post():
         # Fetch full profile
         profile_result = db.table("profiles").select(
             "display_name, biggest_goal, biggest_insecurity, archetype, "
-            "target_archetype, preferred_language"
+            "target_archetype, preferred_language, "
+            "daily_pattern, activity_level, upcoming_context"
         ).eq("id", user_id).single().execute()
         profile = profile_result.data or {}
 
@@ -1152,12 +1202,23 @@ def onboarding_plan_post():
             goals_list = [str(raw_goals)] if raw_goals else []
         profile["biggest_goal"] = ", ".join(goals_list)
 
+        # Extract lifestyle fields for prompt enrichment
+        _daily_pattern = profile.get("daily_pattern") or ""
+        _activity_level = profile.get("activity_level") or ""
+        _upcoming_context = profile.get("upcoming_context") or ""
+
         # --- Generate plan in 3 chunks to avoid JSON truncation ---
         import re as _re
 
-        def _try_generate_chunk(day_start: int, day_end: int) -> list:
-            prompt = build_chunked_plan_prompt(language, profile, observations, scores, day_start, day_end)
-            raw = ask_claude(prompt, max_tokens=4000)
+        def _try_generate_chunk(day_start: int, day_end: int, attempt: int) -> list:
+            prompt = build_chunked_plan_prompt(
+                language, profile, observations, scores, day_start, day_end,
+                daily_pattern=_daily_pattern,
+                activity_level=_activity_level,
+                upcoming_context=_upcoming_context,
+            )
+            max_tokens_value = 8000
+            raw = ask_claude(prompt, max_tokens=max_tokens_value)
             cleaned = _re.sub(r"^```(?:json)?\s*|\s*```$", "", raw.strip(), flags=_re.MULTILINE).strip()
             return json.loads(cleaned)
 
@@ -1166,7 +1227,7 @@ def onboarding_plan_post():
             chunk = None
             for attempt in range(2):
                 try:
-                    chunk = _try_generate_chunk(chunk_start, chunk_end)
+                    chunk = _try_generate_chunk(chunk_start, chunk_end, attempt)
                     break
                 except (ValueError, json.JSONDecodeError):
                     if attempt == 1:
@@ -1232,6 +1293,7 @@ def onboarding_plan_post():
                 "journey_day": day_num,
                 "focus_pillar": _normalize_pillar(day_data.get("focus_pillar", "")),
                 "summary": day_data.get("summary", ""),
+                "theme": day_data.get("theme", ""),
                 "is_recovery_day": bool(day_data.get("is_recovery_day", False)),
             })
 
@@ -1258,6 +1320,8 @@ def onboarding_plan_post():
                     "pillar": _normalize_pillar(action.get("pillar", "")),
                     "title": action.get("title", ""),
                     "description": action.get("description", ""),
+                    "why": action.get("why", ""),
+                    "minimum": action.get("minimum", ""),
                 })
 
         if actions_to_insert:
@@ -1266,7 +1330,7 @@ def onboarding_plan_post():
         # Mark onboarding complete
         db.table("profiles").update({
             "onboarding_complete": True,
-            "onboarding_step": 6,
+            "onboarding_step": 7,
             "journey_start_date": journey_start,
             "journey_day": 0,
         }).eq("id", user_id).execute()
@@ -1291,7 +1355,7 @@ def onboarding_plan_reveal():
 
         # Fetch the first 3 days with their actions
         plans_result = db.table("daily_plans").select(
-            "id, journey_day, focus_pillar, summary, is_recovery_day"
+            "id, journey_day, focus_pillar, summary, theme, is_recovery_day"
         ).eq("user_id", user_id).in_("journey_day", [1, 2, 3]).order("journey_day").execute()
         plans = plans_result.data or []
 
@@ -1300,7 +1364,7 @@ def onboarding_plan_reveal():
         actions_map: dict = {}
         if plan_ids:
             actions_result = db.table("daily_actions").select(
-                "daily_plan_id, position, pillar, title, description"
+                "daily_plan_id, position, pillar, title, description, why, minimum"
             ).in_("daily_plan_id", plan_ids).order("position").execute()
             for action in (actions_result.data or []):
                 pid = action["daily_plan_id"]

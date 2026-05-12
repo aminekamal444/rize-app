@@ -332,9 +332,9 @@
     "ar": "الهدف"
   },
   "onboarding.goal.step_label": {
-    "fr": "ÉTAPE 03 / 04",
-    "en": "STEP 03 / 04",
-    "ar": "الخطوة 03 / 04"
+    "fr": "ÉTAPE 03 / 05",
+    "en": "STEP 03 / 05",
+    "ar": "الخطوة 03 / 05"
   },
   "onboarding.goal.headline": {
     "fr": "Sur quoi veux-tu te concentrer ?",
@@ -410,6 +410,127 @@
     "fr": "Tu peux choisir jusqu'à 5 priorités.",
     "en": "You can pick up to 5 priorities.",
     "ar": "يمكنك اختيار ما يصل إلى 5 أولويات."
+  },
+
+  "onboarding.lifestyle.step_label": {
+    "fr": "ÉTAPE 04 / 05",
+    "en": "STEP 04 / 05",
+    "ar": "الخطوة 04 / 05"
+  },
+  "onboarding.lifestyle.headline": {
+    "fr": "Parle-nous de ton quotidien",
+    "en": "Tell us about your day",
+    "ar": "أخبرنا عن يومك"
+  },
+  "onboarding.lifestyle.subtitle": {
+    "fr": "Ces réponses nous aident à construire un plan qui colle vraiment à ta vie.",
+    "en": "This helps us build a plan that actually fits your life.",
+    "ar": "ستساعدنا إجاباتك على بناء خطة تناسب حياتك فعلاً."
+  },
+  "onboarding.lifestyle.q1_label": {
+    "fr": "À quoi ressemble la plupart de tes journées ?",
+    "en": "What does most of your day look like?",
+    "ar": "كيف تبدو معظم أيامك؟"
+  },
+  "onboarding.lifestyle.q1_options.mostly_sitting.label": {
+    "fr": "Surtout assis",
+    "en": "Mostly sitting",
+    "ar": "جالساً في الغالب"
+  },
+  "onboarding.lifestyle.q1_options.mostly_sitting.descriptor": {
+    "fr": "École, bureau, ordinateur",
+    "en": "School, office, screen",
+    "ar": "مدرسة، مكتب، شاشة"
+  },
+  "onboarding.lifestyle.q1_options.mostly_active.label": {
+    "fr": "Surtout actif",
+    "en": "Mostly active",
+    "ar": "نشيطاً في الغالب"
+  },
+  "onboarding.lifestyle.q1_options.mostly_active.descriptor": {
+    "fr": "Travail physique, debout",
+    "en": "Physical work, on my feet",
+    "ar": "عمل جسدي، على قدمي"
+  },
+  "onboarding.lifestyle.q1_options.mixed.label": {
+    "fr": "Mixte",
+    "en": "Mixed",
+    "ar": "متنوع"
+  },
+  "onboarding.lifestyle.q1_options.mixed.descriptor": {
+    "fr": "Assis et en mouvement",
+    "en": "Sitting and moving",
+    "ar": "بين الجلوس والحركة"
+  },
+  "onboarding.lifestyle.q2_label": {
+    "fr": "À quel point es-tu actif en ce moment ?",
+    "en": "How active are you currently?",
+    "ar": "ما مدى نشاطك البدني حالياً؟"
+  },
+  "onboarding.lifestyle.q2_options.sedentary.label": {
+    "fr": "Sédentaire",
+    "en": "Sedentary",
+    "ar": "خامل"
+  },
+  "onboarding.lifestyle.q2_options.sedentary.descriptor": {
+    "fr": "Peu ou pas d'exercice",
+    "en": "Rarely exercise",
+    "ar": "نادراً ما أمارس الرياضة"
+  },
+  "onboarding.lifestyle.q2_options.occasional.label": {
+    "fr": "Occasionnel",
+    "en": "Occasional",
+    "ar": "أحياناً"
+  },
+  "onboarding.lifestyle.q2_options.occasional.descriptor": {
+    "fr": "1-2 fois par semaine",
+    "en": "1-2 times per week",
+    "ar": "مرة أو مرتين في الأسبوع"
+  },
+  "onboarding.lifestyle.q2_options.regular.label": {
+    "fr": "Régulier",
+    "en": "Regular",
+    "ar": "منتظم"
+  },
+  "onboarding.lifestyle.q2_options.regular.descriptor": {
+    "fr": "3 fois ou plus par semaine",
+    "en": "3+ times per week",
+    "ar": "3 مرات أو أكثر في الأسبوع"
+  },
+  "onboarding.lifestyle.q2_options.athletic.label": {
+    "fr": "Sportif",
+    "en": "Athletic",
+    "ar": "رياضي"
+  },
+  "onboarding.lifestyle.q2_options.athletic.descriptor": {
+    "fr": "Entraînement intense",
+    "en": "Intense training, sport",
+    "ar": "تدريب مكثف، رياضة منتظمة"
+  },
+  "onboarding.lifestyle.q3_label": {
+    "fr": "Quelque chose qui arrive bientôt dans ta vie ?",
+    "en": "Anything coming up in your life?",
+    "ar": "هل هناك شيء قادم في حياتك قريباً؟"
+  },
+  "onboarding.lifestyle.q3_sublabel": {
+    "fr": "(optionnel — mais utile pour prioriser)",
+    "en": "(optional — but helps us prioritize)",
+    "ar": "(اختياري — لكنه يساعدنا على ترتيب الأولويات)"
+  },
+  "onboarding.lifestyle.q3_placeholder": {
+    "fr": "ex. 'Entretien le mois prochain' ou 'Mariage en été' ou 'Juste me sentir mieux'",
+    "en": "e.g., 'Job interview next month' or 'Wedding in summer' or 'Just want to feel better'",
+    "ar": "مثلاً: 'مقابلة عمل الشهر القادم' أو 'حفل زفاف في الصيف' أو 'فقط أريد أن أشعر بتحسن'"
+  },
+  "onboarding.lifestyle.continue_btn": {
+    "fr": "Continuer",
+    "en": "Continue",
+    "ar": "متابعة"
+  },
+  "onboarding.lifestyle.error_required": {
+    "fr": "Réponds aux deux premières questions pour continuer.",
+    "en": "Please answer the first two questions to continue.",
+    "ar": "يرجى الإجابة على السؤالين الأولين للمتابعة."
   },
 
   "onboarding.photo.tag": {
