@@ -923,5 +923,57 @@
     "fr": "La Phase 3 construira cet écran avec tes actions quotidiennes.",
     "en": "Phase 3 will build this screen with your daily actions.",
     "ar": "ستبني المرحلة 3 هذه الشاشة بإجراءاتك اليومية."
+  },
+
+  "nav.today": {
+    "fr": "Aujourd'hui",
+    "en": "Today",
+    "ar": "اليوم"
+  },
+  "nav.plan": {
+    "fr": "Mon Parcours",
+    "en": "My Journey",
+    "ar": "مساري"
+  },
+
+  "calendar.title": {
+    "fr": "Ton Parcours",
+    "en": "Your Journey",
+    "ar": "مسارك"
+  },
+  "calendar.day_label": {
+    "fr": "Jour",
+    "en": "Day",
+    "ar": "يوم"
+  },
+  "calendar.today_label": {
+    "fr": "Aujourd'hui",
+    "en": "Today",
+    "ar": "اليوم"
+  },
+  "calendar.locked_label": {
+    "fr": "À venir",
+    "en": "Coming up",
+    "ar": "قادم"
+  },
+  "calendar.final_days": {
+    "fr": "Derniers jours",
+    "en": "Final days",
+    "ar": "الأيام الأخيرة"
+  },
+  "calendar.week_label": {
+    "fr": "Semaine",
+    "en": "Week",
+    "ar": "أسبوع"
+  },
+  "calendar.modal_close": {
+    "fr": "Fermer",
+    "en": "Close",
+    "ar": "إغلاق"
+  },
+  "calendar.empty_state": {
+    "fr": "Génère ton plan d'abord.",
+    "en": "Generate your plan first.",
+    "ar": "أنشئ خطتك أولاً."
   }
 }

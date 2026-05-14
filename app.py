@@ -44,7 +44,11 @@ def inject_layout_flags():
         "login",
         "onboarding_language",
     )
-    return {"show_lang_switcher": show_lang_switcher}
+    show_main_nav = request.endpoint in (
+        "today",
+        "plan_calendar",
+    )
+    return {"show_lang_switcher": show_lang_switcher, "show_main_nav": show_main_nav}
 
 
 def clean(value):
@@ -1391,6 +1395,108 @@ def onboarding_plan_reveal_post():
     except Exception:
         pass
     return redirect(url_for("today"))
+
+
+@app.route("/plan-calendar")
+@login_required
+def plan_calendar():
+    guard = require_onboarding_complete()
+    if guard:
+        return guard
+
+    user_id = get_current_user()
+    try:
+        from collections import defaultdict
+
+        admin = get_admin_supabase()
+
+        # Fetch profile for journey_day and streak
+        profile_result = admin.table("profiles").select(
+            "journey_day, streak_current, archetype"
+        ).eq("id", user_id).single().execute()
+        profile = profile_result.data or {}
+
+        journey_day = profile.get("journey_day") or 1
+        streak = profile.get("streak_current") or 0
+        archetype = profile.get("archetype") or ""
+
+        # Fetch ALL daily_plans for this user (all 30 days)
+        plans_result = admin.table("daily_plans").select(
+            "id, journey_day, focus_pillar, theme, summary"
+        ).eq("user_id", user_id).order("journey_day", desc=False).execute()
+        plans = plans_result.data or []
+
+        # Build a map: plan_id → journey_day (for joining with actions)
+        plan_id_to_day = {p["id"]: p["journey_day"] for p in plans}
+
+        # Fetch ALL daily_actions completion state
+        actions_result = admin.table("daily_actions").select(
+            "daily_plan_id, completed"
+        ).eq("user_id", user_id).execute()
+        actions = actions_result.data or []
+
+        # Build: journey_day → list of completed booleans
+        day_actions: dict = defaultdict(list)
+        for action in actions:
+            day_num = plan_id_to_day.get(action["daily_plan_id"])
+            if day_num is not None:
+                day_actions[day_num].append(action["completed"])
+
+        # Build calendar data: list of 30 day objects
+        plans_by_day = {p["journey_day"]: p for p in plans}
+
+        calendar_days = []
+        for day_num in range(1, 31):
+            plan = plans_by_day.get(day_num, {})
+            action_completions = day_actions.get(day_num, [])
+
+            if day_num < journey_day:
+                all_done = all(action_completions) if action_completions else False
+                state = "completed" if all_done else "partial"
+            elif day_num == journey_day:
+                state = "current"
+            else:
+                state = "locked"
+
+            calendar_days.append({
+                "day": day_num,
+                "state": state,
+                "pillar": plan.get("focus_pillar", "") if state != "locked" else plan.get("focus_pillar", ""),
+                "theme": plan.get("theme", "") if state in ("completed", "partial", "current") else "",
+                "summary": plan.get("summary", "") if state in ("completed", "partial", "current") else "",
+            })
+
+        # Group into weeks
+        weeks = []
+        for week_num in range(4):
+            start = week_num * 7
+            end = start + 7
+            weeks.append({
+                "label": f"{t('calendar.week_label')} {week_num + 1}",
+                "days": calendar_days[start:end],
+            })
+        # Add final days 29-30
+        remaining = calendar_days[28:]
+        if remaining:
+            weeks.append({
+                "label": t("calendar.final_days"),
+                "days": remaining,
+            })
+
+    except Exception:
+        journey_day = 1
+        streak = 0
+        archetype = ""
+        weeks = []
+
+    return render_template(
+        "plan_calendar.html",
+        journey_day=journey_day,
+        streak=streak,
+        archetype=archetype,
+        weeks=weeks,
+        progress_pct=round((journey_day - 1) / 30 * 100),
+    )
 
 
 if __name__ == "__main__":

@@ -31,6 +31,19 @@
         </div>
     </nav>
 
+    {% if show_main_nav %}
+    <nav class="main-nav">
+        <a href="{{ url_for('today') }}"
+           class="main-nav-item {% if request.endpoint == 'today' %}active{% endif %}">
+            {{ t('nav.today') }}
+        </a>
+        <a href="{{ url_for('plan_calendar') }}"
+           class="main-nav-item {% if request.endpoint == 'plan_calendar' %}active{% endif %}">
+            {{ t('nav.plan') }}
+        </a>
+    </nav>
+    {% endif %}
+
     {% block content %}{% endblock %}
 
     {% block scripts %}{% endblock %}

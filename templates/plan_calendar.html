@@ -1,0 +1,106 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}{{ t('calendar.title') }} — RIZE{% endblock %}
+
+{% block content %}
+<div class="calendar-header">
+    <p class="today-tag">{{ t('calendar.title') }}</p>
+    <h1 class="calendar-archetype">{{ archetype }}</h1>
+
+    <div class="today-topbar" style="margin-bottom: 0;">
+        <span class="today-day-label">
+            {{ t('calendar.day_label') | upper }} {{ journey_day }} / 30
+        </span>
+        {% if streak > 0 %}
+        <span class="today-streak-block">
+            <span class="today-streak-num">{{ streak }}</span>
+            <span class="today-streak-label">{{ t('today.days_in_row') | upper }}</span>
+        </span>
+        {% endif %}
+    </div>
+
+    <div class="calendar-progress-bar-container">
+        <div class="calendar-progress-bar-fill" style="width: {{ progress_pct }}%;"></div>
+    </div>
+</div>
+
+<div class="calendar-body">
+    {% if not weeks %}
+    {# Empty state — no plan generated yet #}
+    <div style="text-align: center; padding: 80px 24px;">
+        <p style="color: rgba(255,255,255,0.5); font-size: 0.95em; margin-bottom: 24px;">
+            {{ t('calendar.empty_state') }}
+        </p>
+        <a href="{{ url_for('onboarding_plan') }}" class="btn btn-primary">
+            {{ t('onboarding.reveal.cta') }}
+        </a>
+    </div>
+    {% else %}
+    {% for week in weeks %}
+    <p class="calendar-week-label">{{ week.label }}</p>
+    <div class="calendar-week-grid">
+        {% for day in week.days %}
+        <div class="calendar-day {{ day.state }} {% if day.state in ('completed', 'partial') %}clickable{% elif day.state == 'current' %}clickable{% endif %}"
+             {% if day.state in ('completed', 'partial') %}
+             onclick="openModal({{ day.day }}, '{{ day.pillar | upper }}', {{ day.theme | tojson }}, {{ day.summary | tojson }})"
+             {% elif day.state == 'current' %}
+             onclick="window.location.href='{{ url_for('today') }}'"
+             {% endif %}>
+
+            <span class="calendar-day-number">{{ day.day }}</span>
+
+            {% if day.pillar %}
+            <span class="calendar-day-pillar">{{ day.pillar | upper }}</span>
+            {% endif %}
+
+            {% if day.state == 'completed' %}
+            <span class="calendar-day-check">&#10003;</span>
+            {% elif day.state == 'partial' %}
+            <span class="calendar-day-check" style="color: rgba(201,168,76,0.45);">&#8722;</span>
+            {% elif day.state == 'current' %}
+            <span class="calendar-day-today-label">{{ t('calendar.today_label') }}</span>
+            {% elif day.state == 'locked' %}
+            <span class="calendar-day-pillar" style="opacity: 0.35;">{{ t('calendar.locked_label') }}</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+
+{# Review modal — shown when user taps a completed/partial day #}
+<div class="calendar-modal-overlay hidden" id="calendarModal" onclick="closeModal(event)">
+    <div class="calendar-modal" id="calendarModalInner">
+        <p class="calendar-modal-day" id="modalDayLabel"></p>
+        <p class="calendar-modal-theme" id="modalTheme"></p>
+        <p class="calendar-modal-summary" id="modalSummary"></p>
+        <button class="calendar-modal-close" onclick="closeModalDirect()">
+            {{ t('calendar.modal_close') }}
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openModal(dayNum, pillar, theme, summary) {
+    document.getElementById('modalDayLabel').textContent =
+        '{{ t("calendar.day_label") | upper }} ' + dayNum + (pillar ? ' — ' + pillar : '');
+    document.getElementById('modalTheme').textContent = theme || '';
+    document.getElementById('modalSummary').textContent = summary || '';
+    document.getElementById('calendarModal').classList.remove('hidden');
+}
+
+function closeModal(event) {
+    // Close only if clicking the overlay, not the modal itself
+    if (event.target === document.getElementById('calendarModal')) {
+        document.getElementById('calendarModal').classList.add('hidden');
+    }
+}
+
+function closeModalDirect() {
+    document.getElementById('calendarModal').classList.add('hidden');
+}
+</script>
+{% endblock %}
