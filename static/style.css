@@ -2864,3 +2864,146 @@ footer p {
 [dir="rtl"] .calendar-week-label {
   text-align: right;
 }
+
+/* ── Photo step progress tiles ───────────────────────────────────────── */
+
+.photo-progress-tiles {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.photo-progress-tile {
+  width: 32px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.photo-progress-tile.completed {
+  background: #c9a84c;
+}
+
+.photo-progress-tile.current {
+  background: rgba(201, 168, 76, 0.5);
+  animation: tile-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes tile-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ── SVG illustration container ──────────────────────────────────────── */
+
+.photo-illustration {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Photo preview screen ────────────────────────────────────────────── */
+
+.photo-preview-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.photo-preview-img {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+.photo-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.photo-checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9em;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.photo-checklist-item::before {
+  content: "○";
+  color: rgba(201, 168, 76, 0.6);
+  font-size: 1.1em;
+  flex-shrink: 0;
+}
+
+/* ── Use this photo button ───────────────────────────────────────────── */
+
+.photo-use-btn {
+  width: 100%;
+  padding: 16px;
+  background: #c9a84c;
+  color: #0e0c0a;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.photo-use-btn:hover {
+  opacity: 0.9;
+}
+
+.photo-use-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Retake link ─────────────────────────────────────────────────────── */
+
+.photo-retake-link {
+  display: block;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85em;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 8px;
+}
+
+.photo-retake-link:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Day Zero headline style ─────────────────────────────────────────── */
+
+.photo-dayzero-headline {
+  font-size: 2em;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 8px;
+  line-height: 1.1;
+}
+
+.photo-dayzero-sub {
+  font-size: 0.95em;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 32px;
+  line-height: 1.5;
+}

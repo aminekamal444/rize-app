@@ -1,0 +1,164 @@
+{% extends "shared/layout.html" %}
+
+{% block title %}RIZE — {{ t('onboarding.photo.tag') }}{% endblock %}
+
+{% block nav_right %}{% endblock %}
+
+{% block content %}
+<section class="onboarding-section">
+    <div class="onboarding-container">
+
+        <div class="onboarding-step-tag">05 / 05</div>
+
+        {# Progress tiles: ✓ ✓ ● #}
+        <div class="photo-progress-tiles">
+            <div class="photo-progress-tile completed"></div>
+            <div class="photo-progress-tile completed"></div>
+            <div class="photo-progress-tile current"></div>
+        </div>
+
+        {# ================================================================
+           SECTION A — Guidance screen
+        ================================================================ #}
+        <div id="section-guidance">
+
+            <div class="onboarding-header" style="text-align:left;">
+                <h2 class="photo-dayzero-headline">{{ t('onboarding.photo3.headline') }}</h2>
+                <p class="photo-dayzero-sub">{{ t('onboarding.photo3.subheadline') }}</p>
+            </div>
+
+            {# SVG — upper body illustration #}
+            <div class="photo-illustration">
+                <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    {# Head #}
+                    <ellipse cx="100" cy="54" rx="22" ry="24" stroke="#c9a84c" stroke-width="1.8"/>
+                    {# Wider torso for full outfit view #}
+                    <path d="M42 160 C42 124 62 106 100 100 C138 106 158 124 158 160" stroke="#c9a84c" stroke-width="1.8" fill="none"/>
+                    {# Torso outline (shirt shape) #}
+                    <path d="M62 108 L62 152 L138 152 L138 108" stroke="#c9a84c" stroke-width="1.2" opacity="0.4" fill="none"/>
+                    {# Bracket lines left/right indicating "full body in frame" #}
+                    <path d="M22 80 L22 90 L32 90" stroke="#c9a84c" stroke-width="1.5" opacity="0.6" fill="none"/>
+                    <path d="M22 148 L22 158 L32 158" stroke="#c9a84c" stroke-width="1.5" opacity="0.6" fill="none"/>
+                    <path d="M178 80 L178 90 L168 90" stroke="#c9a84c" stroke-width="1.5" opacity="0.6" fill="none"/>
+                    <path d="M178 148 L178 158 L168 158" stroke="#c9a84c" stroke-width="1.5" opacity="0.6" fill="none"/>
+                    {# Center dot #}
+                    <circle cx="100" cy="54" r="3" fill="#c9a84c" opacity="0.4"/>
+                    {# Waist line hint #}
+                    <line x1="68" y1="138" x2="132" y2="138" stroke="#c9a84c" stroke-width="0.8" opacity="0.3" stroke-dasharray="3 3"/>
+                </svg>
+            </div>
+
+            <ul class="photo-guide-list">
+                <li><span class="card-number">01</span> {{ t('onboarding.photo3.instructions.1') }}</li>
+                <li><span class="card-number">02</span> {{ t('onboarding.photo3.instructions.2') }}</li>
+                <li><span class="card-number">03</span> {{ t('onboarding.photo3.instructions.3') }}</li>
+                <li><span class="card-number">04</span> {{ t('onboarding.photo3.instructions.4') }}</li>
+            </ul>
+
+            <div id="upload-error" class="onboarding-error" style="display:none;"></div>
+
+            <input type="file" id="photo-input" accept="image/*" capture="user" style="display:none">
+
+            <button type="button" class="btn onboarding-submit" id="take-btn"
+                    onclick="document.getElementById('photo-input').click()">
+                {{ t('onboarding.photo.take_btn') }}
+            </button>
+        </div>
+
+        {# ================================================================
+           SECTION B — Preview screen
+        ================================================================ #}
+        <div id="section-preview" style="display:none;">
+
+            <div class="photo-preview-container">
+                <img id="photo-preview-img" class="photo-preview-img" src="" alt="preview">
+
+                <p style="font-size:0.8em; letter-spacing:0.08em; text-transform:uppercase;
+                           color:rgba(201,168,76,0.8); margin-bottom:12px;">
+                    {{ t('onboarding.photo.check_label') }}
+                </p>
+
+                <ul class="photo-checklist">
+                    <li class="photo-checklist-item">{{ t('onboarding.photo3.checklist.1') }}</li>
+                    <li class="photo-checklist-item">{{ t('onboarding.photo3.checklist.2') }}</li>
+                    <li class="photo-checklist-item">{{ t('onboarding.photo3.checklist.3') }}</li>
+                </ul>
+
+                <div id="preview-error" class="onboarding-error" style="display:none;"></div>
+
+                <button type="button" class="photo-use-btn" id="use-btn"
+                        onclick="uploadPhoto()">
+                    {{ t('onboarding.photo.use_btn') }}
+                </button>
+
+                <a class="photo-retake-link" onclick="retake()">
+                    {{ t('onboarding.photo.retake_link') }}
+                </a>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+var storedFile = null;
+
+document.getElementById('photo-input').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    storedFile = file;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        document.getElementById('photo-preview-img').src = ev.target.result;
+        document.getElementById('section-guidance').style.display = 'none';
+        document.getElementById('section-preview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+});
+
+function retake() {
+    storedFile = null;
+    document.getElementById('photo-input').value = '';
+    document.getElementById('section-preview').style.display = 'none';
+    document.getElementById('section-guidance').style.display = 'block';
+    document.getElementById('preview-error').style.display = 'none';
+}
+
+function uploadPhoto() {
+    if (!storedFile) return;
+    var btn = document.getElementById('use-btn');
+    btn.disabled = true;
+    btn.textContent = '{{ t("onboarding.photo.uploading") }}';
+    document.getElementById('preview-error').style.display = 'none';
+
+    var fd = new FormData();
+    fd.append('photo', storedFile);
+    fd.append('photo_type', 'baseline_body');
+
+    fetch('/onboarding/photo-upload', { method: 'POST', body: fd })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (data.success) {
+                window.location.href = data.next;
+            } else {
+                showError(data.error || '{{ t("onboarding.photo.error.upload") }}');
+                btn.disabled = false;
+                btn.textContent = '{{ t("onboarding.photo.use_btn") }}';
+            }
+        })
+        .catch(function() {
+            showError('{{ t("onboarding.photo.error.upload") }}');
+            btn.disabled = false;
+            btn.textContent = '{{ t("onboarding.photo.use_btn") }}';
+        });
+}
+
+function showError(msg) {
+    var el = document.getElementById('preview-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+}
+</script>
+{% endblock %}

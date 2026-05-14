@@ -975,5 +975,169 @@
     "fr": "Génère ton plan d'abord.",
     "en": "Generate your plan first.",
     "ar": "أنشئ خطتك أولاً."
+  },
+
+  "onboarding.photo.take_btn": {
+    "fr": "PRENDRE MA PHOTO",
+    "en": "TAKE MY PHOTO",
+    "ar": "التقط صورتي"
+  },
+  "onboarding.photo.use_btn": {
+    "fr": "UTILISER CETTE PHOTO",
+    "en": "USE THIS PHOTO",
+    "ar": "استخدم هذه الصورة"
+  },
+  "onboarding.photo.retake_link": {
+    "fr": "Reprendre",
+    "en": "Retake",
+    "ar": "إعادة التقاط"
+  },
+  "onboarding.photo.uploading": {
+    "fr": "Upload en cours...",
+    "en": "Uploading...",
+    "ar": "جارٍ الرفع..."
+  },
+  "onboarding.photo.check_label": {
+    "fr": "Vérifie ta photo :",
+    "en": "Check your photo:",
+    "ar": "تحقق من صورتك:"
+  },
+
+  "onboarding.photo1.headline": {
+    "fr": "Jour Zéro commence ici.",
+    "en": "Day Zero starts here.",
+    "ar": "اليوم الصفر يبدأ هنا."
+  },
+  "onboarding.photo1.subheadline": {
+    "fr": "3 photos. 30 secondes. Le point de départ de ta transformation.",
+    "en": "3 photos. 30 seconds. The starting point of your transformation.",
+    "ar": "3 صور. 30 ثانية. نقطة انطلاق تحولك."
+  },
+  "onboarding.photo1.instructions.1": {
+    "fr": "Face à la caméra, directement",
+    "en": "Face the camera directly",
+    "ar": "واجه الكاميرا مباشرة"
+  },
+  "onboarding.photo1.instructions.2": {
+    "fr": "Expression neutre",
+    "en": "Neutral expression",
+    "ar": "تعبير محايد"
+  },
+  "onboarding.photo1.instructions.3": {
+    "fr": "Bonne lumière frontale",
+    "en": "Good front lighting",
+    "ar": "إضاءة أمامية جيدة"
+  },
+  "onboarding.photo1.instructions.4": {
+    "fr": "Tête droite, pas inclinée",
+    "en": "Head level, not tilted",
+    "ar": "الرأس مستقيم غير مائل"
+  },
+  "onboarding.photo1.checklist.1": {
+    "fr": "Mon visage est bien visible et net",
+    "en": "My face is clearly visible and sharp",
+    "ar": "وجهي واضح تماماً وحاد"
+  },
+  "onboarding.photo1.checklist.2": {
+    "fr": "La photo n'est pas floue",
+    "en": "The photo is not blurry",
+    "ar": "الصورة غير ضبابية"
+  },
+  "onboarding.photo1.checklist.3": {
+    "fr": "La lumière est correcte (pas trop sombre)",
+    "en": "The lighting is good (not too dark)",
+    "ar": "الإضاءة جيدة (ليست مظلمة جداً)"
+  },
+
+  "onboarding.photo2.headline": {
+    "fr": "Ton profil",
+    "en": "Your profile",
+    "ar": "ملامحك الجانبية"
+  },
+  "onboarding.photo2.subheadline": {
+    "fr": "Tourne-toi de 90° vers la droite.",
+    "en": "Turn 90° to the right.",
+    "ar": "استدر 90° نحو اليمين."
+  },
+  "onboarding.photo2.instructions.1": {
+    "fr": "Tourne-toi à 90° vers la droite",
+    "en": "Turn 90° to the right",
+    "ar": "استدر 90° نحو اليمين"
+  },
+  "onboarding.photo2.instructions.2": {
+    "fr": "Regarde droit devant toi",
+    "en": "Look straight ahead",
+    "ar": "انظر مباشرة إلى الأمام"
+  },
+  "onboarding.photo2.instructions.3": {
+    "fr": "Épaules décontractées",
+    "en": "Relax your shoulders",
+    "ar": "أرخِ كتفيك"
+  },
+  "onboarding.photo2.instructions.4": {
+    "fr": "Même lumière que la photo 1",
+    "en": "Same lighting as photo 1",
+    "ar": "نفس إضاءة الصورة الأولى"
+  },
+  "onboarding.photo2.checklist.1": {
+    "fr": "Mon profil est clairement visible",
+    "en": "My profile is clearly visible",
+    "ar": "ملامحي الجانبية واضحة تماماً"
+  },
+  "onboarding.photo2.checklist.2": {
+    "fr": "Je regarde droit devant (pas vers la caméra)",
+    "en": "I'm looking straight ahead (not at the camera)",
+    "ar": "أنظر إلى الأمام مباشرة (وليس نحو الكاميرا)"
+  },
+  "onboarding.photo2.checklist.3": {
+    "fr": "La photo n'est pas floue",
+    "en": "The photo is not blurry",
+    "ar": "الصورة غير ضبابية"
+  },
+
+  "onboarding.photo3.headline": {
+    "fr": "Ton look actuel",
+    "en": "Your current look",
+    "ar": "مظهرك الحالي"
+  },
+  "onboarding.photo3.subheadline": {
+    "fr": "Porte ce que tu portes normalement.",
+    "en": "Wear what you'd normally wear.",
+    "ar": "البس ما تلبسه عادةً."
+  },
+  "onboarding.photo3.instructions.1": {
+    "fr": "Face à la caméra, directement",
+    "en": "Face the camera directly",
+    "ar": "واجه الكاميرا مباشرة"
+  },
+  "onboarding.photo3.instructions.2": {
+    "fr": "Haut du corps entier visible (tête aux hanches)",
+    "en": "Full upper body visible (head to hips)",
+    "ar": "الجزء العلوي من الجسم كاملاً (من الرأس إلى الوركين)"
+  },
+  "onboarding.photo3.instructions.3": {
+    "fr": "Porte ta tenue habituelle",
+    "en": "Wear your typical daily outfit",
+    "ar": "البس ملابسك المعتادة اليومية"
+  },
+  "onboarding.photo3.instructions.4": {
+    "fr": "Bonne lumière",
+    "en": "Good lighting",
+    "ar": "إضاءة جيدة"
+  },
+  "onboarding.photo3.checklist.1": {
+    "fr": "Mon haut du corps entier est visible",
+    "en": "My full upper body is visible",
+    "ar": "الجزء العلوي من جسمي كاملاً مرئي"
+  },
+  "onboarding.photo3.checklist.2": {
+    "fr": "Ma tenue est clairement visible",
+    "en": "My outfit is clearly visible",
+    "ar": "ملابسي واضحة بشكل جلي"
+  },
+  "onboarding.photo3.checklist.3": {
+    "fr": "La photo n'est pas floue",
+    "en": "The photo is not blurry",
+    "ar": "الصورة غير ضبابية"
   }
 }

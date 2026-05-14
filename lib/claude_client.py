@@ -65,14 +65,39 @@ def ask_claude_json(
     max_tokens: int = 600,
     image_base64: Optional[str] = None,
     media_type: Optional[str] = None,
+    images: Optional[list] = None,
 ) -> dict:
     """
     Send a prompt expecting a JSON response.
 
+    Supports single image (image_base64 + media_type, backward-compatible)
+    or multiple images (images: list of {"b64": str, "label": str}).
+
     Strips markdown code fences if present, parses the JSON, and returns
     the dict. Raises ValueError if the response cannot be parsed.
     """
-    if image_base64 and media_type:
+    if images:
+        # Multi-image path: build content with labeled image blocks
+        client = get_claude()
+        content: list = []
+        for img in images:
+            content.append({"type": "text", "text": f"[Image: {img['label']}]"})
+            content.append({
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": "image/jpeg",
+                    "data": img["b64"],
+                },
+            })
+        content.append({"type": "text", "text": prompt})
+        message = client.messages.create(
+            model=_MODEL_VISION,
+            max_tokens=max_tokens,
+            messages=[{"role": "user", "content": content}],
+        )
+        raw = message.content[0].text
+    elif image_base64 and media_type:
         raw = ask_claude_vision(prompt, image_base64, media_type, max_tokens)
     else:
         raw = ask_claude(prompt, max_tokens)

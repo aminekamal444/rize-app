@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from dotenv import load_dotenv
 import base64
 import io
@@ -702,7 +702,7 @@ def onboarding():
         1: "onboarding_profile",
         2: "onboarding_goal",
         3: "onboarding_lifestyle",
-        4: "onboarding_photo",
+        4: "onboarding_photo_1",
         5: "onboarding_analyzing",
         6: "onboarding_reveal",
         7: "onboarding_plan_reveal",
@@ -867,64 +867,91 @@ def onboarding_lifestyle_post():
     except Exception as exc:
         return render_template("onboarding/lifestyle.html", error=str(exc))
 
-    return redirect(url_for("onboarding_photo"))
+    return redirect(url_for("onboarding_photo_1"))
 
 
 # ---------------------------------------------------------------------------
-# Step 5 — Baseline photo upload
+# Step 5 — Baseline photo upload (3-photo sequential flow)
 # ---------------------------------------------------------------------------
 
-@app.route("/onboarding/photo", methods=["GET"])
+@app.route("/onboarding/photo-1")
 @login_required
-def onboarding_photo():
-    return render_template("onboarding/photo.html")
+def onboarding_photo_1():
+    return render_template("onboarding/photo_1.html")
 
 
-@app.route("/onboarding/photo", methods=["POST"])
+@app.route("/onboarding/photo-2")
 @login_required
-def onboarding_photo_post():
+def onboarding_photo_2():
+    user_id = get_current_user()
+    try:
+        admin = get_admin_supabase()
+        existing = admin.table("photos").select("id").eq(
+            "user_id", user_id
+        ).eq("type", "baseline_front").execute()
+        if not existing.data:
+            return redirect(url_for("onboarding_photo_1"))
+    except Exception:
+        return redirect(url_for("onboarding_photo_1"))
+    return render_template("onboarding/photo_2.html")
+
+
+@app.route("/onboarding/photo-3")
+@login_required
+def onboarding_photo_3():
+    user_id = get_current_user()
+    try:
+        admin = get_admin_supabase()
+        existing = admin.table("photos").select("id").eq(
+            "user_id", user_id
+        ).eq("type", "baseline_side").execute()
+        if not existing.data:
+            return redirect(url_for("onboarding_photo_2"))
+    except Exception:
+        return redirect(url_for("onboarding_photo_2"))
+    return render_template("onboarding/photo_3.html")
+
+
+@app.route("/onboarding/photo-upload", methods=["POST"])
+@login_required
+def onboarding_photo_upload():
     user_id = get_current_user()
     photo = request.files.get("photo")
+    photo_type = request.form.get("photo_type")
 
-    if not photo or photo.filename == "":
-        return render_template("onboarding/photo.html",
-                               error=t("onboarding.photo.error.no_file"))
+    valid_types = ["baseline_front", "baseline_side", "baseline_body"]
+    if not photo or photo_type not in valid_types:
+        return jsonify({"success": False, "error": "Invalid request"}), 400
 
     if not (photo.content_type or "").startswith("image/"):
-        return render_template("onboarding/photo.html",
-                               error=t("onboarding.photo.error.invalid"))
+        return jsonify({"success": False,
+                        "error": t("onboarding.photo.error.invalid")}), 400
 
     try:
-        # Compress to baseline spec: 1200×1200 at 80% JPEG
         compressed = thumbnail_for_baseline(photo)
         compressed_bytes = compressed.read()
-        storage_path = f"{user_id}/baseline.jpg"
+        storage_path = f"{user_id}/{photo_type}.jpg"
 
-        # Storage upload uses admin client (bypasses RLS). Path is scoped to
-        # user_id derived from Flask session (verified by @login_required),
-        # so user isolation is maintained at the application level.
         admin = get_admin_supabase()
-        # Remove any existing file at this path (e.g., from previous attempts).
-        # Ignore failures since the file may not exist yet on first upload.
+
+        # Remove existing file for this type (retake support)
         try:
             admin.storage.from_("progress-photos").remove([storage_path])
         except Exception:
             pass
+
         admin.storage.from_("progress-photos").upload(
             storage_path,
             compressed_bytes,
             {"content-type": "image/jpeg"},
         )
 
-        # Upsert: if a baseline row already exists (e.g., from a previous upload
-        # or a rapid double-submit), update it and clear stale analysis data so
-        # the analyzing step runs fresh. Otherwise insert a new row.
+        # Upsert photos table row
         existing = admin.table("photos").select("id").eq(
             "user_id", user_id
-        ).eq("type", "baseline").execute()
+        ).eq("type", photo_type).execute()
 
-        if existing.data and len(existing.data) > 0:
-            photo_id = existing.data[0]["id"]
+        if existing.data:
             admin.table("photos").update({
                 "storage_path": storage_path,
                 "bucket": "progress-photos",
@@ -937,26 +964,36 @@ def onboarding_photo_post():
                 "strength": None,
                 "improvement": None,
                 "observations": None,
-            }).eq("id", photo_id).execute()
+            }).eq("user_id", user_id).eq("type", photo_type).execute()
         else:
-            insert_result = admin.table("photos").insert({
+            admin.table("photos").insert({
                 "user_id": user_id,
-                "type": "baseline",
+                "type": photo_type,
                 "storage_path": storage_path,
                 "bucket": "progress-photos",
                 "journey_day": 0,
             }).execute()
-            photo_id = insert_result.data[0]["id"] if insert_result.data else None
 
-        # Store path + photo_id in session for the analyzing step
-        session["baseline_photo_path"] = storage_path
-        session["baseline_photo_id"] = photo_id
+        # Update onboarding_step
+        step_map = {
+            "baseline_front": 4,
+            "baseline_side": 4,
+            "baseline_body": 5,
+        }
+        admin.table("profiles").update({
+            "onboarding_step": step_map[photo_type]
+        }).eq("id", user_id).execute()
 
-        admin.table("profiles").update({"onboarding_step": 5}).eq("id", user_id).execute()
+        next_url_map = {
+            "baseline_front": url_for("onboarding_photo_2"),
+            "baseline_side": url_for("onboarding_photo_3"),
+            "baseline_body": url_for("onboarding_analyzing"),
+        }
+
+        return jsonify({"success": True, "next": next_url_map[photo_type]})
 
     except Exception as exc:
-        return render_template("onboarding/photo.html",
-                               error=t("onboarding.photo.error.upload") + f" ({exc})")
+        return jsonify({"success": False, "error": str(exc)}), 500
 
     return redirect(url_for("onboarding_analyzing"))
 
@@ -969,17 +1006,21 @@ def onboarding_photo_post():
 @login_required
 def onboarding_analyzing():
     user_id = get_current_user()
-    photo_path = session.get("baseline_photo_path", "")
 
-    # Try to generate a signed URL for showing the photo on the loading screen
+    # Try to generate a signed URL for the front-face photo (shown on loading screen)
     photo_url = None
-    if photo_path:
-        try:
-            admin = get_admin_supabase()
+    try:
+        admin = get_admin_supabase()
+        front_result = admin.table("photos").select("storage_path").eq(
+            "user_id", user_id
+        ).in_("type", ["baseline_front", "baseline"]).execute()
+        front_rows = front_result.data or []
+        if front_rows:
+            photo_path = front_rows[0]["storage_path"]
             signed = admin.storage.from_("progress-photos").create_signed_url(photo_path, 300)
             photo_url = signed.get("signedURL") or signed.get("signedUrl")
-        except Exception:
-            pass
+    except Exception:
+        pass
 
     return render_template("onboarding/analyzing.html", photo_url=photo_url)
 
@@ -988,15 +1029,10 @@ def onboarding_analyzing():
 @login_required
 def onboarding_analyzing_post():
     user_id = get_current_user()
-    photo_path = session.get("baseline_photo_path")
-    photo_id = session.get("baseline_photo_id")
-
-    if not photo_path:
-        return render_template("onboarding/analyzing.html",
-                               error=t("onboarding.analyzing.error"))
 
     try:
         db = _db()
+        admin = get_admin_supabase()
 
         # Fetch profile data for the prompt
         profile_result = db.table("profiles").select(
@@ -1007,8 +1043,7 @@ def onboarding_analyzing_post():
 
         language = profile.get("preferred_language") or get_language()
 
-        # biggest_goal is now a JSON array string (multi-select); fall back
-        # gracefully for any user who completed the old single-string flow.
+        # biggest_goal is a JSON array string (multi-select)
         raw_goals = profile.get("biggest_goal") or "[]"
         try:
             goals_list = json.loads(raw_goals) if raw_goals else []
@@ -1020,11 +1055,45 @@ def onboarding_analyzing_post():
 
         biggest_insecurity = profile.get("biggest_insecurity") or ""
 
-        # Download the compressed baseline photo from storage
-        photo_bytes = get_admin_supabase().storage.from_("progress-photos").download(photo_path)
-        photo_b64 = base64.standard_b64encode(photo_bytes).decode("utf-8")
+        # Fetch all baseline photos for this user (new 3-photo or old single-photo)
+        photos_result = admin.table("photos").select(
+            "type, storage_path"
+        ).eq("user_id", user_id).in_(
+            "type", ["baseline_front", "baseline_side", "baseline_body", "baseline"]
+        ).execute()
 
-        # Call Claude Vision
+        photo_data = {}
+        front_photo_id = None
+        for photo_row in (photos_result.data or []):
+            try:
+                photo_bytes = admin.storage.from_(
+                    "progress-photos"
+                ).download(photo_row["storage_path"])
+                photo_data[photo_row["type"]] = base64.standard_b64encode(
+                    photo_bytes
+                ).decode("utf-8")
+            except Exception:
+                pass
+
+        # Support both new 3-photo flow and old single-photo flow
+        photo_front_b64 = photo_data.get("baseline_front") or photo_data.get("baseline")
+        photo_side_b64 = photo_data.get("baseline_side")
+        photo_body_b64 = photo_data.get("baseline_body")
+
+        # Build images list for Claude Vision (only include photos that exist)
+        images = []
+        if photo_front_b64:
+            images.append({"b64": photo_front_b64, "label": "front_face"})
+        if photo_side_b64:
+            images.append({"b64": photo_side_b64, "label": "side_profile"})
+        if photo_body_b64:
+            images.append({"b64": photo_body_b64, "label": "upper_body"})
+
+        if not images:
+            return render_template("onboarding/analyzing.html",
+                                   error=t("onboarding.analyzing.error"))
+
+        # Build and send the prompt with all available photos
         prompt = build_baseline_score_prompt(
             language,
             biggest_goal,
@@ -1036,8 +1105,7 @@ def onboarding_analyzing_post():
         result = ask_claude_json(
             prompt,
             max_tokens=1000,
-            image_base64=photo_b64,
-            media_type="image/jpeg",
+            images=images,
         )
 
         scores = result.get("scores", {})
@@ -1051,8 +1119,13 @@ def onboarding_analyzing_post():
         for k in ("hair", "style", "fitness", "skin", "overall"):
             scores[k] = max(0, min(100, int(scores.get(k, 50))))
 
-        # Save scores + observations to the photos row
-        if photo_id:
+        # Save scores to the front-face photo row (primary reference for scores)
+        front_photo_result = admin.table("photos").select("id").eq(
+            "user_id", user_id
+        ).in_("type", ["baseline_front", "baseline"]).execute()
+        front_photo_rows = front_photo_result.data or []
+        if front_photo_rows:
+            front_photo_id = front_photo_rows[0]["id"]
             db.table("photos").update({
                 "score_overall": scores.get("overall"),
                 "score_hair": scores.get("hair"),
@@ -1062,7 +1135,7 @@ def onboarding_analyzing_post():
                 "strength": strength,
                 "improvement": improvement,
                 "observations": json.dumps(observations),
-            }).eq("id", photo_id).execute()
+            }).eq("id", front_photo_id).execute()
 
         # Save archetype + baseline_score to profiles
         db.table("profiles").update({
@@ -1072,7 +1145,7 @@ def onboarding_analyzing_post():
             "onboarding_step": 6,
         }).eq("id", user_id).execute()
 
-        # Clear temporary session keys
+        # Clear any legacy session keys from old single-photo flow
         session.pop("baseline_photo_path", None)
         session.pop("baseline_photo_id", None)
 
@@ -1102,11 +1175,18 @@ def onboarding_reveal():
         ).eq("id", user_id).single().execute()
         profile = profile_result.data or {}
 
-        # Fetch scores + observations from the baseline photo row
-        photo_result = db.table("photos").select(
+        # Fetch scores + observations — try baseline_front first (3-photo flow),
+        # fall back to baseline for legacy single-photo users
+        admin = get_admin_supabase()
+        photo_result = admin.table("photos").select(
             "score_hair, score_style, score_fitness, score_skin, score_overall, "
             "strength, improvement, observations"
-        ).eq("user_id", user_id).eq("type", "baseline").order("created_at", desc=True).limit(1).execute()
+        ).eq("user_id", user_id).eq("type", "baseline_front").order("created_at", desc=True).limit(1).execute()
+        if not photo_result.data:
+            photo_result = admin.table("photos").select(
+                "score_hair, score_style, score_fitness, score_skin, score_overall, "
+                "strength, improvement, observations"
+            ).eq("user_id", user_id).eq("type", "baseline").order("created_at", desc=True).limit(1).execute()
         photo = (photo_result.data or [{}])[0]
 
         observations_raw = photo.get("observations")
@@ -1169,10 +1249,15 @@ def onboarding_plan_post():
         ).eq("id", user_id).single().execute()
         profile = profile_result.data or {}
 
-        # Fetch baseline photo observations and scores
+        # Fetch baseline photo observations and scores — try baseline_front first
+        # (3-photo flow), fall back to baseline for legacy single-photo users
         photo_result = db.table("photos").select(
             "score_hair, score_style, score_fitness, score_skin, observations"
-        ).eq("user_id", user_id).eq("type", "baseline").order("created_at", desc=True).limit(1).execute()
+        ).eq("user_id", user_id).eq("type", "baseline_front").order("created_at", desc=True).limit(1).execute()
+        if not photo_result.data:
+            photo_result = db.table("photos").select(
+                "score_hair, score_style, score_fitness, score_skin, observations"
+            ).eq("user_id", user_id).eq("type", "baseline").order("created_at", desc=True).limit(1).execute()
         photo = (photo_result.data or [{}])[0]
 
         observations_raw = photo.get("observations")
