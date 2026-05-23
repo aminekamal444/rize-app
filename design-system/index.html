@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RIZE — Design System Preview</title>
+
+  <!--
+    ═══════════════════════════════════════════════════════
+    GOOGLE FONTS — load order matters for performance
+
+    1. Pinyon Script    — logo wordmark (Spencerian/Copperplate style)
+       Load weight 400 only. Never use at < 24px.
+
+    2. Plus Jakarta Sans — all UI text: labels, metrics, body copy
+       Weights: 300 400 500 600 700 800
+       Variable font (wght axis) for smooth weight transitions.
+
+    3. JetBrains Mono  — numbered labels (01 / 02 / 03) and numeric data
+       Weights: 400 500
+    ═══════════════════════════════════════════════════════
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Tailwind CDN for preview only — use PostCSS build in production -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Inline the custom tokens from tailwind.config.js for CDN preview
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            onyx:    { DEFAULT: '#0B0F19', 900: '#080C14', 800: '#0F1420' },
+            surface: { DEFAULT: '#161F30', hover: '#1C2840', nested: '#1F2D42' },
+            electric:{ DEFAULT: '#00F5D4', 60: 'rgba(0,245,212,.6)', 10: 'rgba(0,245,212,.1)' },
+            ink:     { DEFAULT: '#F0EDE8', muted: '#8A96A8', dim: '#4A5568' },
+          },
+          fontFamily: {
+            script: ['"Pinyon Script"', 'cursive'],
+            sans:   ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+            mono:   ['"JetBrains Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /*
+     * Base reset — the dashboard component provides its own bg,
+     * but this ensures no flash of white on load.
+     */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background-color: #0B0F19; height: 100%; }
+    body { font-family: '"Plus Jakarta Sans"', Inter, sans-serif; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!--
+    To run the preview:
+      1. npm create vite@latest rize-design -- --template react
+      2. Copy design-system/components/* into src/components/
+      3. Replace src/App.jsx with:
+           import DashboardScreen from './components/DashboardScreen';
+           export default function App() { return <DashboardScreen />; }
+      4. Copy tailwind.config.js to project root
+      5. npm run dev
+  -->
+</body>
+</html>
